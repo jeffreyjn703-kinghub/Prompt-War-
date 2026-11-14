@@ -39,6 +39,8 @@ def get_profile(current_user: User = Depends(get_current_user), db: Session = De
         for p in current_user.projects
     ]
 
+    is_new = (not current_user.is_demo) and (profile.readiness_pct == 0.0 or len(skills) == 0)
+
     return ProfileResponse(
         user_id=current_user.id,
         email=current_user.email,
@@ -51,7 +53,8 @@ def get_profile(current_user: User = Depends(get_current_user), db: Session = De
         skills=skills,
         certifications=certs,
         projects=projs,
-        last_active_at=profile.last_active_at
+        last_active_at=profile.last_active_at,
+        is_new_user=is_new
     )
 
 @router.put("", response_model=ProfileResponse)

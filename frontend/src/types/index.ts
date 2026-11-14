@@ -38,6 +38,7 @@ export interface Profile {
   certifications: CertificationItem[];
   projects: ProjectItem[];
   last_active_at?: string;
+  is_new_user?: boolean;
 }
 
 export interface SkillTaxonomyItem {

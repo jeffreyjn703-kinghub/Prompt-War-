@@ -41,3 +41,4 @@ class ProfileResponse(BaseModel):
     certifications: List[CertificationItem]
     projects: List[ProjectItem]
     last_active_at: Optional[datetime] = None
+    is_new_user: Optional[bool] = False

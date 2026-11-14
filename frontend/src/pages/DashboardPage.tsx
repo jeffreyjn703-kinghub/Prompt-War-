@@ -72,9 +72,14 @@ export const DashboardPage: React.FC = () => {
     loadDashboardData();
   }, [profile?.user_id]);
 
-  const readiness = profile?.readiness_pct ?? 32.0;
-  const streakDays = profile?.streak_days ?? 6;
-  const hoursCompleted = progress?.total_completed_hours ?? 4.5;
+  const isNewUser = Boolean(
+    profile?.is_new_user ||
+    (profile?.readiness_pct === 0 && (!progress?.score_history || progress?.score_history.length === 0))
+  );
+
+  const readiness = profile?.readiness_pct ?? (isNewUser ? 0 : 32.0);
+  const streakDays = profile?.streak_days ?? (isNewUser ? 1 : 6);
+  const hoursCompleted = progress?.total_completed_hours ?? (isNewUser ? 0 : 4.5);
   const weeklyHours = profile?.weekly_hours ?? 10;
 
   // Active phase is the first incomplete phase
@@ -101,15 +106,18 @@ export const DashboardPage: React.FC = () => {
 
   const showReplanBanner =
     !dismissBanner &&
+    !isNewUser &&
     roadmap?.trigger_event &&
     ['ASSESSMENT_POOR', 'GOAL_CHANGED', 'ASSESSMENT_STRONG', 'PROGRESS_STALLED'].includes(
       roadmap.trigger_event
     );
 
-  // Fallback score history if empty
+  // Score history data - empty for fresh new users
   const scoreHistoryData =
     progress?.score_history && progress.score_history.length > 0
       ? progress.score_history
+      : isNewUser
+      ? []
       : [
           { date: 'Oct 28', score: 82, skill: 'Python' },
           { date: 'Nov 02', score: 76, skill: 'SQL' },
@@ -118,12 +126,19 @@ export const DashboardPage: React.FC = () => {
         ];
 
   // Quick reply prompt chips for AI Mentor
-  const quickPrompts = [
-    'Explain JS Closures',
-    'What should I do next?',
-    'Why did my roadmap change?',
-    'Review SQL Indexing',
-  ];
+  const quickPrompts = isNewUser
+    ? [
+        `How is my ${profile?.target_role || 'Full Stack'} readiness calculated?`,
+        'What skills should I prioritize first?',
+        'How do adaptive assessments work?',
+        'Explain the 4 phases of my roadmap',
+      ]
+    : [
+        'Explain JS Closures',
+        'What should I do next?',
+        'Why did my roadmap change?',
+        'Review SQL Indexing',
+      ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -156,10 +171,12 @@ export const DashboardPage: React.FC = () => {
             <span>Target Role: {profile?.target_role || 'Full Stack Developer'}</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-heading">
-            Welcome back, {profile?.full_name?.split(' ')[0] || 'Arjun'}
+            {isNewUser ? `Welcome, ${profile?.full_name || 'Learner'}` : `Welcome back, ${profile?.full_name?.split(' ')[0] || 'Arjun'}`}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
-            {profile?.education || 'B.E. CSE student'} • Studying {weeklyHours}h / week • Next target: Bridge Core JavaScript fundamentals.
+            {isNewUser
+              ? `${profile?.education || 'Personalized learning workspace active'} • Studying ${weeklyHours}h / week • Calibrating baseline curriculum.`
+              : `${profile?.education || 'B.E. CSE student'} • Studying ${weeklyHours}h / week • Next target: Bridge Core JavaScript fundamentals.`}
           </p>
         </div>
 
@@ -170,8 +187,12 @@ export const DashboardPage: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Verified</span>
             </div>
-            <span className="text-lg font-bold text-slate-900 dark:text-white">2 Skills</span>
-            <span className="text-[10px] text-slate-400 block">Python, SQL</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">
+              {isNewUser ? '0 Skills' : '2 Skills'}
+            </span>
+            <span className="text-[10px] text-slate-400 block">
+              {isNewUser ? 'Diagnostic ready' : 'Python, SQL'}
+            </span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 min-w-[105px]">
@@ -188,8 +209,10 @@ export const DashboardPage: React.FC = () => {
               <Flame className="w-3.5 h-3.5" />
               <span>Streak</span>
             </div>
-            <span className="text-lg font-bold text-slate-900 dark:text-white">{streakDays} Days</span>
-            <span className="text-[10px] text-slate-400 block">Active pace</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">{streakDays} Day{streakDays === 1 ? '' : 's'}</span>
+            <span className="text-[10px] text-slate-400 block">
+              {isNewUser ? 'Welcome pace' : 'Active pace'}
+            </span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 min-w-[105px]">
@@ -197,11 +220,79 @@ export const DashboardPage: React.FC = () => {
               <Award className="w-3.5 h-3.5" />
               <span>Next Quiz</span>
             </div>
-            <span className="text-lg font-bold text-slate-900 dark:text-white">JS Core</span>
-            <span className="text-[10px] text-slate-400 block">Phase 1 Gate</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">
+              {isNewUser ? 'Baseline' : 'JS Core'}
+            </span>
+            <span className="text-[10px] text-slate-400 block">
+              {isNewUser ? 'Diagnostic' : 'Phase 1 Gate'}
+            </span>
           </div>
         </div>
       </div>
+
+      {/* New Learner Onboarding Quick-Start Guide */}
+      {isNewUser && (
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 dark:from-indigo-950/40 dark:via-purple-950/30 dark:to-slate-900 border border-indigo-200/70 dark:border-indigo-800/60 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-bold tracking-wide uppercase mb-1">
+                <Sparkles className="w-3 h-3" />
+                Workspace Quick-Start Guide
+              </div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                Personalized Learning Environment Calibrated for {profile?.target_role || 'Full Stack Developer'}
+              </h2>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                Your AI agent pipeline has synthesized a tailored 4-phase curriculum. Follow these 3 steps to calibrate your progression:
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Link
+              to="/roadmap"
+              className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-850/80 border border-indigo-100 dark:border-indigo-900/50 hover:border-indigo-400 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">Step 1 • Curriculum</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Explore Your Roadmap</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Inspect 4 curated phases and milestones tailored for {profile?.target_role || 'your target role'}.
+              </p>
+            </Link>
+
+            <Link
+              to="/assessments"
+              className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-850/80 border border-indigo-100 dark:border-indigo-900/50 hover:border-indigo-400 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400">Step 2 • Verification</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Take Baseline Diagnostic</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Establish verified benchmark scores and unlock live skill radar calibration.
+              </p>
+            </Link>
+
+            <Link
+              to="/mentor"
+              className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-850/80 border border-indigo-100 dark:border-indigo-900/50 hover:border-indigo-400 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Step 3 • 24/7 Guidance</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Consult AI Career Mentor</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Ask architectural questions, debug concepts, and review industry interview topics.
+              </p>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Row 1: Readiness Ring + Skill Radar + AI Mentor Insight */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -439,14 +530,31 @@ export const DashboardPage: React.FC = () => {
 
         {/* Heat Strip List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            { name: 'Python', current: 4, target: 4, status: 'strong', confidence: 'Verified' },
-            { name: 'SQL', current: 3, target: 3, status: 'strong', confidence: 'Verified' },
-            { name: 'HTML & CSS', current: 2, target: 4, status: 'partial', confidence: 'Self-rated' },
-            { name: 'JavaScript', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
-            { name: 'React', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
-            { name: 'Node.js & APIs', current: 0, target: 3, status: 'missing', confidence: 'Unverified' },
-          ].map((skill, idx) => {
+          {(analysis?.radar_data && analysis.radar_data.length > 0
+            ? analysis.radar_data.slice(0, 6).map((item: any) => {
+                const status =
+                  item.learner_level >= item.target_level && item.learner_level > 0
+                    ? 'strong'
+                    : item.learner_level > 0
+                    ? 'partial'
+                    : 'missing';
+                return {
+                  name: item.subject,
+                  current: item.learner_level,
+                  target: item.target_level,
+                  status,
+                  confidence: item.confidence_label || (item.learner_level > 0 ? 'Self-rated' : 'Unverified'),
+                };
+              })
+            : [
+                { name: 'Python', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
+                { name: 'JavaScript', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
+                { name: 'HTML & CSS', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
+                { name: 'SQL', current: 0, target: 3, status: 'missing', confidence: 'Unverified' },
+                { name: 'React', current: 0, target: 4, status: 'missing', confidence: 'Unverified' },
+                { name: 'Node.js & APIs', current: 0, target: 3, status: 'missing', confidence: 'Unverified' },
+              ]
+          ).map((skill: any, idx: number) => {
             const pct = Math.min(100, Math.round((skill.current / skill.target) * 100));
             return (
               <button
@@ -593,47 +701,75 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="w-full h-44 my-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={scoreHistoryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} />
-                <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} />
-                <Tooltip
-                  content={({ payload }) => {
-                    if (!payload || !payload.length) return null;
-                    const d = payload[0].payload;
-                    return (
-                      <div className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs shadow-md">
-                        <span className="font-bold text-slate-900 dark:text-white block">
-                          {d.skill} Quiz
-                        </span>
-                        <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
-                          Score: {d.score}%
-                        </span>
-                        <span className="text-[10px] text-slate-400 block">{d.date}</span>
-                      </div>
-                    );
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke="#4f46e5"
-                  strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#4f46e5' }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          {scoreHistoryData.length > 0 ? (
+            <div className="w-full h-44 my-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={scoreHistoryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} />
+                  <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} />
+                  <Tooltip
+                    content={({ payload }) => {
+                      if (!payload || !payload.length) return null;
+                      const d = payload[0].payload;
+                      return (
+                        <div className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs shadow-md">
+                          <span className="font-bold text-slate-900 dark:text-white block">
+                            {d.skill} Quiz
+                          </span>
+                          <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                            Score: {d.score}%
+                          </span>
+                          <span className="text-[10px] text-slate-400 block">{d.date}</span>
+                        </div>
+                      );
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#4f46e5"
+                    strokeWidth={2.5}
+                    dot={{ r: 4, fill: '#4f46e5' }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="w-full h-44 my-2 flex flex-col items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-850 border border-dashed border-slate-200 dark:border-slate-800 text-center p-4">
+              <Award className="w-7 h-7 text-indigo-500 mb-2 opacity-80" />
+              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                Awaiting Baseline Diagnostic
+              </p>
+              <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
+                Take your first skill diagnostic to establish your baseline and track verified score progression over time.
+              </p>
+              <Link
+                to="/assessments"
+                className="mt-2.5 px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold inline-flex items-center gap-1.5 transition-colors shadow-xs"
+              >
+                <span>Start Diagnostic Assessment</span>
+                <ChevronRight className="w-3 h-3" />
+              </Link>
+            </div>
+          )}
 
-          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-            <span>
-              Latest JavaScript score (48%) initiated an adaptive remedial roadmap adjustment.
-            </span>
-          </div>
+          {scoreHistoryData.some((s: any) => s.score < 60) ? (
+            <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>
+                Diagnostic score below 60% threshold initiated adaptive remedial curriculum reinforcement.
+              </span>
+            </div>
+          ) : (
+            <div className="p-2.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 text-[11px] text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+              <span>
+                Scoring 60%+ verifies competencies on your live radar; adaptive pipeline monitors your progression.
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

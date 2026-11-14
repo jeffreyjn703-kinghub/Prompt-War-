@@ -36,6 +36,7 @@ export const ARJUN_PROFILE: Profile = {
   weekly_hours: 10,
   streak_days: 6,
   readiness_pct: 32.0,
+  is_new_user: false,
   skills: [
     {
       skill_name: 'Python',
@@ -99,6 +100,7 @@ export const ALEX_PROFILE: Profile = {
   weekly_hours: 15,
   streak_days: 18,
   readiness_pct: 78.0,
+  is_new_user: false,
   skills: [
     {
       skill_name: 'Python',
@@ -150,6 +152,48 @@ export const ALEX_PROFILE: Profile = {
   ],
 };
 
+export function createNewUserProfile(name: string, email: string, targetRole: string = 'Full Stack Developer'): Profile {
+  return {
+    user_id: Math.floor(Math.random() * 9000) + 1000,
+    email: email.trim().toLowerCase(),
+    full_name: name.trim() || 'New Learner',
+    education: 'Computer Science & Engineering',
+    target_role: targetRole,
+    weekly_hours: 10,
+    streak_days: 1,
+    readiness_pct: 0.0,
+    skills: [
+      {
+        skill_name: 'Python',
+        proficiency: 2,
+        verified_level: null,
+        confidence: 'self-rated',
+      },
+      {
+        skill_name: 'JavaScript',
+        proficiency: 1,
+        verified_level: null,
+        confidence: 'self-rated',
+      },
+      {
+        skill_name: 'HTML & CSS',
+        proficiency: 2,
+        verified_level: null,
+        confidence: 'self-rated',
+      },
+      {
+        skill_name: 'SQL',
+        proficiency: 1,
+        verified_level: null,
+        confidence: 'self-rated',
+      },
+    ],
+    certifications: [],
+    projects: [],
+    is_new_user: true,
+  };
+}
+
 function loadStoredProfile(): Profile {
   try {
     const raw = localStorage.getItem('skillpath_mock_profile');
@@ -161,6 +205,9 @@ function loadStoredProfile(): Profile {
 export function saveStoredProfile(p: Profile) {
   try {
     localStorage.setItem('skillpath_mock_profile', JSON.stringify(p));
+    if (p.email) {
+      localStorage.setItem(`skillpath_profile_${p.email.toLowerCase()}`, JSON.stringify(p));
+    }
   } catch (_) {}
 }
 
@@ -307,7 +354,7 @@ const MOCK_SKILLS: SkillTaxonomyItem[] = [
   { skill_id: 'testing', name: 'Unit & Integration Testing', category: 'Engineering Practices', description: 'Test-driven development, Jest, PyTest, mock stubs', prerequisites: [] },
 ];
 
-let currentMockRoadmap: RoadmapVersion = {
+export const ARJUN_ROADMAP: RoadmapVersion = {
   id: 1,
   version_number: 2,
   trigger_event: 'ASSESSMENT_POOR',
@@ -497,6 +544,236 @@ let currentMockRoadmap: RoadmapVersion = {
   ],
 };
 
+export function createPristineRoadmap(targetRole: string = 'Full Stack Developer'): RoadmapVersion {
+  return {
+    id: 10,
+    version_number: 1,
+    trigger_event: 'INITIAL_CURRICULUM_SYNTHESIS',
+    target_role: targetRole,
+    reason_diff: `Pristine curriculum synthesized for ${targetRole}. Tailored 4-phase sequence from foundational architecture to production capstone.`,
+    total_phases: 4,
+    total_hours: 58,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    phases: [
+      {
+        id: 1,
+        phase_number: 1,
+        title: 'Phase 1: Foundations & Core Architecture',
+        description: 'Establish core language syntax, programming fundamentals, Git versioning, and environment orchestration.',
+        estimated_hours: 14,
+        is_completed: false,
+        is_remedial: false,
+        items: [
+          {
+            id: 101,
+            skill_id: 'javascript',
+            item_type: 'tutorial',
+            title: 'Modern JavaScript (ES2024+) & Asynchronous Primitives',
+            provider: 'MDN & JavaScript.info',
+            url: 'https://javascript.info',
+            estimated_hours: 4.5,
+            is_completed: false,
+            sort_order: 1,
+            rationale: 'Core syntax and runtime model for modern web engineering.',
+          },
+          {
+            id: 102,
+            skill_id: 'git',
+            item_type: 'course',
+            title: 'Git Version Control & Professional Pull Request Workflows',
+            provider: 'GitHub Skills',
+            url: 'https://skills.github.com',
+            estimated_hours: 3.5,
+            is_completed: false,
+            sort_order: 2,
+            rationale: 'Essential for collaborative engineering and code reviews.',
+          },
+          {
+            id: 103,
+            skill_id: 'html-css',
+            item_type: 'exercise',
+            title: 'Semantic HTML5, CSS Grid Layouts & Responsive Design',
+            provider: 'Web.dev by Google',
+            url: 'https://web.dev/learn/css',
+            estimated_hours: 6.0,
+            is_completed: false,
+            sort_order: 3,
+            rationale: 'Standard responsive layout mechanics and accessibility standards.',
+          },
+        ],
+      },
+      {
+        id: 2,
+        phase_number: 2,
+        title: 'Phase 2: Modern Frontend Frameworks & State',
+        description: 'Build reactive user interfaces, component state hooks, client caching, and modern styling systems.',
+        estimated_hours: 16,
+        is_completed: false,
+        is_remedial: false,
+        items: [
+          {
+            id: 201,
+            skill_id: 'react',
+            item_type: 'course',
+            title: 'React 19 Core Mechanics: Hooks, Virtual DOM & Effects',
+            provider: 'React.dev',
+            url: 'https://react.dev/learn',
+            estimated_hours: 6.0,
+            is_completed: false,
+            sort_order: 1,
+            rationale: 'Industry-standard reactive UI development.',
+          },
+          {
+            id: 202,
+            skill_id: 'react',
+            item_type: 'tutorial',
+            title: 'Global State Management & Async Query Caching',
+            provider: 'TanStack & Zustand Guides',
+            url: 'https://tanstack.com/query/latest',
+            estimated_hours: 4.0,
+            is_completed: false,
+            sort_order: 2,
+            rationale: 'Maintain efficient server cache and state synchronization.',
+          },
+          {
+            id: 203,
+            skill_id: 'react',
+            item_type: 'project',
+            title: 'Interactive Dashboard with Real-time Filters & Data Visualization',
+            provider: 'SkillPath Project Lab',
+            url: 'https://github.com',
+            estimated_hours: 6.0,
+            is_completed: false,
+            sort_order: 3,
+            rationale: 'Practical consolidation of component architecture.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        phase_number: 3,
+        title: 'Phase 3: Backend REST Services & Database Modeling',
+        description: 'Construct scalable APIs, relational schema design, JWT authentication, and automated integration tests.',
+        estimated_hours: 14,
+        is_completed: false,
+        is_remedial: false,
+        items: [
+          {
+            id: 301,
+            skill_id: 'node-js',
+            item_type: 'tutorial',
+            title: 'Building Type-Safe REST APIs with Node.js & TypeScript',
+            provider: 'LogRocket Guides',
+            url: 'https://blog.logrocket.com',
+            estimated_hours: 5.0,
+            is_completed: false,
+            sort_order: 1,
+            rationale: 'Backend endpoint design and schema validation.',
+          },
+          {
+            id: 302,
+            skill_id: 'sql',
+            item_type: 'course',
+            title: 'Relational Database Schema Design & SQL Optimization',
+            provider: 'Use The Index, Luke!',
+            url: 'https://use-the-index-luke.com',
+            estimated_hours: 4.0,
+            is_completed: false,
+            sort_order: 2,
+            rationale: 'Indexing, query plans, foreign key constraints, and migrations.',
+          },
+          {
+            id: 303,
+            skill_id: 'testing',
+            item_type: 'exercise',
+            title: 'Automated Unit & Integration Testing Suites',
+            provider: 'Vitest / Jest Docs',
+            url: 'https://vitest.dev',
+            estimated_hours: 5.0,
+            is_completed: false,
+            sort_order: 3,
+            rationale: 'Ensures system reliability and regression prevention.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        phase_number: 4,
+        title: 'Phase 4: Capstone Engineering & Production Deployment',
+        description: 'Containerize multi-service applications, configure CI/CD pipelines, and deploy to production cloud infrastructure.',
+        estimated_hours: 14,
+        is_completed: false,
+        is_remedial: false,
+        items: [
+          {
+            id: 401,
+            skill_id: 'docker',
+            item_type: 'course',
+            title: 'Containerization with Docker & Multi-Stage Production Builds',
+            provider: 'Docker Official Docs',
+            url: 'https://docs.docker.com/get-started',
+            estimated_hours: 4.0,
+            is_completed: false,
+            sort_order: 1,
+            rationale: 'Consistent builds across local and cloud environments.',
+          },
+          {
+            id: 402,
+            skill_id: 'git',
+            item_type: 'tutorial',
+            title: 'Automating CI/CD Pipelines with GitHub Actions',
+            provider: 'GitHub Actions Documentation',
+            url: 'https://docs.github.com/en/actions',
+            estimated_hours: 3.5,
+            is_completed: false,
+            sort_order: 2,
+            rationale: 'Automated testing, linting, and zero-downtime releases.',
+          },
+          {
+            id: 403,
+            skill_id: 'react',
+            item_type: 'project',
+            title: 'Full Stack Production Capstone Deployment',
+            provider: 'SkillPath Capstone Hub',
+            url: 'https://vercel.com',
+            estimated_hours: 6.5,
+            is_completed: false,
+            sort_order: 3,
+            rationale: 'Comprehensive portfolio-ready enterprise system.',
+          },
+        ],
+      },
+    ],
+  };
+}
+
+export function saveStoredRoadmap(r: RoadmapVersion) {
+  try {
+    localStorage.setItem('skillpath_mock_roadmap', JSON.stringify(r));
+    if (MOCK_PROFILE && MOCK_PROFILE.email) {
+      localStorage.setItem(`skillpath_roadmap_${MOCK_PROFILE.email.toLowerCase()}`, JSON.stringify(r));
+    }
+  } catch (_) {}
+}
+
+function loadStoredRoadmap(): RoadmapVersion {
+  try {
+    if (MOCK_PROFILE && MOCK_PROFILE.email) {
+      const userRoadmap = localStorage.getItem(`skillpath_roadmap_${MOCK_PROFILE.email.toLowerCase()}`);
+      if (userRoadmap) return JSON.parse(userRoadmap);
+    }
+    const raw = localStorage.getItem('skillpath_mock_roadmap');
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  if (MOCK_PROFILE && MOCK_PROFILE.is_new_user) {
+    return createPristineRoadmap(MOCK_PROFILE.target_role);
+  }
+  return JSON.parse(JSON.stringify(ARJUN_ROADMAP));
+}
+
+let currentMockRoadmap: RoadmapVersion = loadStoredRoadmap();
+
 // -------------------------------------------------------------
 // Active Session & Duplicate Account Tracking for Multiple Student Restriction
 // -------------------------------------------------------------
@@ -610,7 +887,10 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
   if (endpoint.startsWith('/auth/demo-login')) {
     if (endpoint.includes('learner=alex')) {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ALEX_PROFILE));
+      MOCK_PROFILE.is_new_user = false;
+      currentMockRoadmap = createPristineRoadmap(ALEX_PROFILE.target_role);
       saveStoredProfile(MOCK_PROFILE);
+      saveStoredRoadmap(currentMockRoadmap);
       setActiveSession(ALEX_PROFILE.email, CLIENT_SESSION_ID);
       return {
         access_token: 'demo-jwt-token-alex-rivera-2026',
@@ -621,7 +901,10 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
       } as unknown as T;
     } else {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ARJUN_PROFILE));
+      MOCK_PROFILE.is_new_user = false;
+      currentMockRoadmap = JSON.parse(JSON.stringify(ARJUN_ROADMAP));
       saveStoredProfile(MOCK_PROFILE);
+      saveStoredRoadmap(currentMockRoadmap);
       setActiveSession(ARJUN_PROFILE.email, CLIENT_SESSION_ID);
       return {
         access_token: 'demo-jwt-token-arjun-kumar-2026',
@@ -657,13 +940,14 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
 
     addRegisteredEmail(email);
     setActiveSession(email, CLIENT_SESSION_ID);
-    MOCK_PROFILE.email = email;
-    MOCK_PROFILE.full_name = name;
+    MOCK_PROFILE = createNewUserProfile(name, email);
+    currentMockRoadmap = createPristineRoadmap(MOCK_PROFILE.target_role);
     saveStoredProfile(MOCK_PROFILE);
+    saveStoredRoadmap(currentMockRoadmap);
 
     return {
       access_token: 'jwt-token-' + btoa(email) + '-' + Date.now(),
-      user_id: Math.floor(Math.random() * 1000) + 10,
+      user_id: MOCK_PROFILE.user_id,
       email: email,
       full_name: name,
       is_demo: false,
@@ -692,12 +976,36 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
     }
 
     setActiveSession(email, CLIENT_SESSION_ID);
-    MOCK_PROFILE.email = email;
+
+    if (email === 'alex.rivera@skillpath.ai' || email === 'alex@skillpath.ai') {
+      MOCK_PROFILE = JSON.parse(JSON.stringify(ALEX_PROFILE));
+      MOCK_PROFILE.is_new_user = false;
+      currentMockRoadmap = createPristineRoadmap(ALEX_PROFILE.target_role);
+    } else if (email === 'arjun.kumar@skillpath.ai' || email === 'demo@skillpath.ai') {
+      MOCK_PROFILE = JSON.parse(JSON.stringify(ARJUN_PROFILE));
+      MOCK_PROFILE.is_new_user = false;
+      currentMockRoadmap = JSON.parse(JSON.stringify(ARJUN_ROADMAP));
+    } else {
+      // Custom student login
+      try {
+        const stored = localStorage.getItem(`skillpath_profile_${email}`);
+        if (stored) {
+          MOCK_PROFILE = JSON.parse(stored);
+        } else {
+          MOCK_PROFILE = createNewUserProfile('Student', email);
+        }
+      } catch (_) {
+        MOCK_PROFILE = createNewUserProfile('Student', email);
+      }
+      currentMockRoadmap = loadStoredRoadmap();
+    }
+
     saveStoredProfile(MOCK_PROFILE);
+    saveStoredRoadmap(currentMockRoadmap);
 
     return {
       access_token: 'jwt-token-' + btoa(email) + '-' + Date.now(),
-      user_id: 1,
+      user_id: MOCK_PROFILE.user_id,
       email: email,
       full_name: MOCK_PROFILE.full_name,
       is_demo: false,
@@ -762,27 +1070,55 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
 
   // Analysis
   if (endpoint === '/analysis') {
+    const roleItem =
+      MOCK_ROLES.find(
+        (r) => r.title.toLowerCase() === (MOCK_PROFILE.target_role || '').toLowerCase()
+      ) || MOCK_ROLES[0];
+
+    const radar_data = Object.entries(roleItem.required_skills).map(([skillId, reqLevel]) => {
+      const userSkill = MOCK_PROFILE.skills?.find(
+        (s) =>
+          s.skill_name.toLowerCase().includes(skillId) ||
+          skillId.includes(s.skill_name.toLowerCase()) ||
+          (skillId === 'node-js' && s.skill_name.toLowerCase().includes('node')) ||
+          (skillId === 'html-css' && s.skill_name.toLowerCase().includes('html'))
+      );
+      const skillDef = MOCK_SKILLS.find((s) => s.skill_id === skillId);
+      const name = skillDef?.name || skillId.toUpperCase();
+      const currentLevel = userSkill ? (userSkill.verified_level ?? userSkill.proficiency) : 0;
+      const conf = userSkill ? userSkill.confidence : (currentLevel > 0 ? 'Self-rated' : 'Unverified');
+      return {
+        subject: name,
+        learner_level: currentLevel,
+        target_level: reqLevel,
+        confidence_label: conf,
+      };
+    });
+
+    const strengths = radar_data
+      .filter((d) => d.learner_level >= d.target_level && d.learner_level > 0)
+      .map((d) => ({
+        name: d.subject,
+        level: d.learner_level,
+        category: 'Core Competency',
+        confidence: d.confidence_label,
+      }));
+
+    const weaknesses = radar_data
+      .filter((d) => d.learner_level < d.target_level)
+      .map((d) => ({
+        name: d.subject,
+        level: d.learner_level,
+        target: d.target_level,
+        gap: d.target_level - d.learner_level,
+        category: 'Skill Gap',
+        priority: d.target_level - d.learner_level >= 3 ? 'Critical' : 'High',
+      }));
+
     return {
-      radar_data: [
-        { subject: 'Python', learner_level: 4, target_level: 4, confidence_label: 'Verified' },
-        { subject: 'SQL', learner_level: 3, target_level: 3, confidence_label: 'Verified' },
-        { subject: 'HTML & CSS', learner_level: 2, target_level: 4, confidence_label: 'Self-rated' },
-        { subject: 'JavaScript', learner_level: 1, target_level: 4, confidence_label: 'Self-rated' },
-        { subject: 'React', learner_level: 0, target_level: 4, confidence_label: 'Unverified' },
-        { subject: 'Node.js', learner_level: 0, target_level: 3, confidence_label: 'Unverified' },
-        { subject: 'Git', learner_level: 2, target_level: 3, confidence_label: 'Self-rated' },
-        { subject: 'Docker', learner_level: 1, target_level: 2, confidence_label: 'Self-rated' },
-        { subject: 'Testing', learner_level: 1, target_level: 3, confidence_label: 'Self-rated' },
-      ],
-      strengths: [
-        { name: 'Python', level: 4, category: 'Backend & Data', confidence: 'Verified by Assessment' },
-        { name: 'SQL', level: 3, category: 'Databases', confidence: 'Verified by Assessment' },
-      ],
-      weaknesses: [
-        { name: 'JavaScript', level: 1, target: 4, gap: 3, category: 'Frontend', priority: 'Critical' },
-        { name: 'React', level: 0, target: 4, gap: 4, category: 'Frontend', priority: 'High' },
-        { name: 'Node.js & APIs', level: 0, target: 3, gap: 3, category: 'Backend', priority: 'High' },
-      ],
+      radar_data,
+      strengths,
+      weaknesses,
     } as unknown as T;
   }
 
@@ -796,48 +1132,46 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
       } catch (_) {}
 
       MOCK_PROFILE.target_role = roleTitle;
-      currentMockRoadmap = {
-        ...currentMockRoadmap,
-        id: currentMockRoadmap.id + 1,
-        version_number: currentMockRoadmap.version_number + 1,
-        target_role: roleTitle,
-        trigger_event: 'GOAL_CHANGED',
-        reason_diff: `Learner pivoted target role from Full Stack Developer to ${roleTitle}. Preserved 2 completed verified skills (Python 4/5, SQL 3/5). Generated delta phases for role competencies.`,
-      };
+      currentMockRoadmap = createPristineRoadmap(roleTitle);
+      currentMockRoadmap.trigger_event = 'GOAL_CHANGED';
+      currentMockRoadmap.reason_diff = `Learner pivoted target role to ${roleTitle}. Synthesis pipeline generated tailored curriculum phases for ${roleTitle}.`;
+      saveStoredProfile(MOCK_PROFILE);
+      saveStoredRoadmap(currentMockRoadmap);
 
       return {
         status: 'success',
         old_role: 'Full Stack Developer',
         new_role: roleTitle,
         replan_diff: currentMockRoadmap.reason_diff,
-        mentor_message: `Goal successfully pivoted to ${roleTitle}! Prior masteries have been preserved and your new roadmap is ready.`,
+        mentor_message: `Goal successfully pivoted to ${roleTitle}! Your curriculum roadmap has been updated for this target role.`,
         new_roadmap_version: currentMockRoadmap.version_number,
       } as unknown as T;
     }
 
+    const matchPct = MOCK_PROFILE.is_new_user
+      ? (MOCK_PROFILE.readiness_pct || 0.0)
+      : (MOCK_PROFILE.readiness_pct ?? 32.0);
+
     return {
-      role_id: 'full-stack-dev',
+      role_id: 'target-role',
       title: MOCK_PROFILE.target_role,
       department: 'Engineering',
-      description: 'Design and implement complete end-to-end web architectures, client frontends, backend APIs, and database migrations.',
-      match_percentage: 32.0,
-      matched_skills: [
-        { skill_id: 'python', name: 'Python', current_level: 4, required_level: 4, status: 'matched', gap: 0 },
-        { skill_id: 'sql', name: 'SQL', current_level: 3, required_level: 3, status: 'matched', gap: 0 },
-        { skill_id: 'html-css', name: 'HTML & CSS', current_level: 2, required_level: 4, status: 'partial', gap: 2 },
-        { skill_id: 'javascript', name: 'JavaScript', current_level: 1, required_level: 4, status: 'partial', gap: 3 },
-        { skill_id: 'react', name: 'React', current_level: 0, required_level: 4, status: 'missing', gap: 4 },
-        { skill_id: 'node-js', name: 'Node.js & APIs', current_level: 0, required_level: 3, status: 'missing', gap: 3 },
-        { skill_id: 'git', name: 'Git & GitHub', current_level: 2, required_level: 3, status: 'partial', gap: 1 },
-        { skill_id: 'docker', name: 'Docker', current_level: 1, required_level: 2, status: 'partial', gap: 1 },
-        { skill_id: 'testing', name: 'Testing', current_level: 1, required_level: 3, status: 'partial', gap: 2 },
-      ],
+      description: `Target curriculum path and industry competency benchmark for ${MOCK_PROFILE.target_role}.`,
+      match_percentage: matchPct,
+      matched_skills: (MOCK_PROFILE.skills || []).map((s) => ({
+        skill_id: s.skill_name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        name: s.skill_name,
+        current_level: s.verified_level ?? s.proficiency,
+        required_level: 4,
+        status: (s.verified_level ?? s.proficiency) >= 4 ? 'matched' : (s.verified_level ?? s.proficiency) > 0 ? 'partial' : 'missing',
+        gap: Math.max(0, 4 - (s.verified_level ?? s.proficiency)),
+      })),
       partial_skills: [],
       missing_skills: [],
       top_recommended_roles: [
         { role_id: 'data-engineer', title: 'Data Engineer', match_pct: 68.0 },
         { role_id: 'backend-engineer', title: 'Backend Engineer', match_pct: 55.0 },
-        { role_id: 'full-stack-dev', title: 'Full Stack Developer', match_pct: 32.0 },
+        { role_id: 'full-stack-dev', title: 'Full Stack Developer', match_pct: matchPct },
       ],
     } as unknown as T;
   }
@@ -869,6 +1203,19 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
   }
 
   if (endpoint === '/roadmap/versions') {
+    if (MOCK_PROFILE.is_new_user) {
+      return [
+        {
+          id: currentMockRoadmap.id,
+          version_number: currentMockRoadmap.version_number,
+          trigger_event: currentMockRoadmap.trigger_event,
+          reason_diff: currentMockRoadmap.reason_diff,
+          created_at: currentMockRoadmap.created_at,
+          total_phases: currentMockRoadmap.total_phases,
+          total_hours: currentMockRoadmap.total_hours,
+        },
+      ] as unknown as T;
+    }
     return [
       {
         id: 2,
@@ -904,6 +1251,32 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
 
   // Progress
   if (endpoint === '/progress') {
+    if (MOCK_PROFILE.is_new_user) {
+      return {
+        readiness_pct: MOCK_PROFILE.readiness_pct || 0.0,
+        streak_days: MOCK_PROFILE.streak_days || 1,
+        weekly_hours: MOCK_PROFILE.weekly_hours || 10,
+        total_completed_hours: 0.0,
+        target_role: MOCK_PROFILE.target_role,
+        forecast_weeks_remaining: 12,
+        score_history: [],
+        phases_progress: currentMockRoadmap.phases.map((p) => ({
+          phase_id: p.id,
+          title: p.title,
+          progress_pct: p.is_completed
+            ? 100
+            : Math.round(
+                (p.items.filter((it) => it.is_completed).length / Math.max(1, p.items.length)) * 100
+              ),
+        })),
+        badges: [
+          { id: 'streak-1', title: 'Day 1 Starter', unlocked: true, icon: 'Flame' },
+          { id: 'quiz-ace', title: 'Diagnostic Ready', unlocked: false, icon: 'ShieldCheck' },
+          { id: 'capstone', title: 'Capstone Ready', unlocked: false, icon: 'Award' },
+        ],
+      } as unknown as T;
+    }
+
     return {
       readiness_pct: 32.0,
       streak_days: 6,
@@ -1090,6 +1463,22 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
 
   // AI Mentor Guidance
   if (endpoint === '/mentor/guidance') {
+    if (MOCK_PROFILE.is_new_user) {
+      const firstName = MOCK_PROFILE.full_name?.split(' ')[0] || 'Learner';
+      return {
+        message: `Welcome to SkillPath AI, ${firstName}! Your personalized learning workspace for ${MOCK_PROFILE.target_role} is initialized. Start by taking your baseline diagnostic assessment or exploring Phase 1 milestones below to establish your verified readiness score.`,
+        action_suggestion: `Take a 10-minute diagnostic quiz on ${
+          MOCK_PROFILE.target_role.includes('Cloud') ? 'Cloud Architecture' : 'JavaScript'
+        } to calibrate your baseline competency radar.`,
+        nudges: [
+          'Day 1 streak active — welcome to SkillPath AI!',
+          `Curriculum synthesized for ${MOCK_PROFILE.target_role}`,
+          'Awaiting baseline diagnostic assessment',
+        ],
+        target_role: MOCK_PROFILE.target_role,
+      } as unknown as T;
+    }
+
     return {
       message: "Hi Arjun! Your Python and SQL foundation is strong (Verified). To reach your 80% Full Stack readiness milestone, let's close the JavaScript closures and event loop gaps in your active remedial phase.",
       action_suggestion: 'Complete the "JavaScript Event Loop Visualized" tutorial (3.5h) this week.',
