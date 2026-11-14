@@ -498,6 +498,68 @@ let currentMockRoadmap: RoadmapVersion = {
 };
 
 // -------------------------------------------------------------
+// Active Session & Duplicate Account Tracking for Multiple Student Restriction
+// -------------------------------------------------------------
+const ACTIVE_SESSIONS_KEY = 'skillpath_active_student_sessions';
+const REGISTERED_USERS_KEY = 'skillpath_registered_students';
+export const CLIENT_SESSION_ID = 'client_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+
+export function getActiveSessions(): Record<string, { email: string; sessionId: string; loggedInAt: string }> {
+  try {
+    const raw = localStorage.getItem(ACTIVE_SESSIONS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return {};
+}
+
+export function setActiveSession(email: string, sessionId: string = CLIENT_SESSION_ID) {
+  try {
+    const sessions = getActiveSessions();
+    sessions[email.toLowerCase()] = {
+      email: email.toLowerCase(),
+      sessionId,
+      loggedInAt: new Date().toISOString(),
+    };
+    localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(sessions));
+  } catch (_) {}
+}
+
+export function removeActiveSession(email: string) {
+  try {
+    const sessions = getActiveSessions();
+    delete sessions[email.toLowerCase()];
+    localStorage.setItem(ACTIVE_SESSIONS_KEY, JSON.stringify(sessions));
+  } catch (_) {}
+}
+
+export function isSessionActive(email: string, currentSessionId: string = CLIENT_SESSION_ID): boolean {
+  const sessions = getActiveSessions();
+  const session = sessions[email.toLowerCase()];
+  if (!session) return false;
+  // If the active session is from another client/tab, it is currently in use
+  if (session.sessionId !== currentSessionId) return true;
+  return false;
+}
+
+export function getRegisteredEmails(): string[] {
+  try {
+    const raw = localStorage.getItem(REGISTERED_USERS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return ['arjun.kumar@skillpath.ai', 'alex.rivera@skillpath.ai', 'demo@skillpath.ai', 'alex@skillpath.ai'];
+}
+
+export function addRegisteredEmail(email: string) {
+  try {
+    const list = getRegisteredEmails();
+    if (!list.includes(email.toLowerCase())) {
+      list.push(email.toLowerCase());
+      localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(list));
+    }
+  } catch (_) {}
+}
+
+// -------------------------------------------------------------
 // Unified Request Function with Smart Mock Fallback
 // -------------------------------------------------------------
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -521,7 +583,21 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     if (response.ok && contentType.includes('application/json')) {
       return (await response.json()) as T;
     }
-  } catch (err) {
+
+    // Propagate HTTP 400 (Already Registered) and 409 (Already in use by active session)
+    if (response.status === 400 || response.status === 409 || response.status === 401) {
+      const errJson = await response.json().catch(() => null);
+      const detail = errJson?.detail || `Authentication error (${response.status})`;
+      const err: any = new Error(detail);
+      err.status = response.status;
+      err.detail = detail;
+      throw err;
+    }
+  } catch (err: any) {
+    // If it's a known HTTP error thrown above, re-throw it!
+    if (err.status === 400 || err.status === 409 || err.status === 401) {
+      throw err;
+    }
     // Backend offline or running purely static build on Vercel
   }
 
@@ -535,6 +611,7 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
     if (endpoint.includes('learner=alex')) {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ALEX_PROFILE));
       saveStoredProfile(MOCK_PROFILE);
+      setActiveSession(ALEX_PROFILE.email, CLIENT_SESSION_ID);
       return {
         access_token: 'demo-jwt-token-alex-rivera-2026',
         user_id: 2,
@@ -545,6 +622,7 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
     } else {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ARJUN_PROFILE));
       saveStoredProfile(MOCK_PROFILE);
+      setActiveSession(ARJUN_PROFILE.email, CLIENT_SESSION_ID);
       return {
         access_token: 'demo-jwt-token-arjun-kumar-2026',
         user_id: 1,
@@ -555,26 +633,87 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
     }
   }
 
-  if (endpoint === '/auth/login' || endpoint === '/auth/register') {
-    let name = 'Arjun Kumar';
-    let email = 'arjun.kumar@skillpath.ai';
+  if (endpoint === '/auth/register') {
+    let email = 'student@skillpath.ai';
+    let name = 'New Student';
     if (options.body) {
       try {
         const body = JSON.parse(options.body as string);
-        if (body.email) email = body.email;
-        if (body.full_name) name = body.full_name;
+        if (body.email) email = body.email.trim().toLowerCase();
+        if (body.full_name) name = body.full_name.trim();
       } catch (_) {}
     }
+
+    // Restriction: Multiple student registrations with the same email ID are restricted
+    const registered = getRegisteredEmails();
+    if (registered.includes(email)) {
+      const err: any = new Error(
+        'This email address is already in use. Multiple student accounts with the same email are restricted. Please sign in instead.'
+      );
+      err.status = 400;
+      err.code = 'EMAIL_ALREADY_IN_USE';
+      throw err;
+    }
+
+    addRegisteredEmail(email);
+    setActiveSession(email, CLIENT_SESSION_ID);
     MOCK_PROFILE.email = email;
     MOCK_PROFILE.full_name = name;
     saveStoredProfile(MOCK_PROFILE);
+
     return {
       access_token: 'jwt-token-' + btoa(email) + '-' + Date.now(),
-      user_id: 1,
+      user_id: Math.floor(Math.random() * 1000) + 10,
       email: email,
       full_name: name,
       is_demo: false,
     } as unknown as T;
+  }
+
+  if (endpoint === '/auth/login') {
+    let email = 'arjun.kumar@skillpath.ai';
+    let force = false;
+    if (options.body) {
+      try {
+        const body = JSON.parse(options.body as string);
+        if (body.email) email = body.email.trim().toLowerCase();
+        if (body.force) force = Boolean(body.force);
+      } catch (_) {}
+    }
+
+    // Restriction: Multiple student logins with the same email ID are restricted
+    if (isSessionActive(email, CLIENT_SESSION_ID) && !force) {
+      const err: any = new Error(
+        'This email ID is already in use by an active student session. Multiple student logins with the same email ID are restricted.'
+      );
+      err.status = 409;
+      err.code = 'EMAIL_ALREADY_IN_USE';
+      throw err;
+    }
+
+    setActiveSession(email, CLIENT_SESSION_ID);
+    MOCK_PROFILE.email = email;
+    saveStoredProfile(MOCK_PROFILE);
+
+    return {
+      access_token: 'jwt-token-' + btoa(email) + '-' + Date.now(),
+      user_id: 1,
+      email: email,
+      full_name: MOCK_PROFILE.full_name,
+      is_demo: false,
+    } as unknown as T;
+  }
+
+  if (endpoint === '/auth/logout' || endpoint.startsWith('/auth/release-session')) {
+    let email = MOCK_PROFILE.email;
+    if (endpoint.includes('email=')) {
+      try {
+        const parts = endpoint.split('email=');
+        if (parts[1]) email = decodeURIComponent(parts[1]);
+      } catch (_) {}
+    }
+    removeActiveSession(email);
+    return { status: 'success', message: 'Session released successfully' } as unknown as T;
   }
 
   // Profile
@@ -1123,15 +1262,25 @@ export const api = {
       `/auth/demo-login?learner=${learner}`,
       { method: 'POST' }
     ),
-  login: (email: string, password: string) =>
+  login: (email: string, password: string, force: boolean = false) =>
     request<{ access_token: string; user_id: number; email: string; full_name: string; is_demo: boolean }>(
       '/auth/login',
-      { method: 'POST', body: JSON.stringify({ email, password }) }
+      { method: 'POST', body: JSON.stringify({ email, password, force }) }
     ),
   register: (email: string, password: string, full_name: string) =>
     request<{ access_token: string; user_id: number; email: string; full_name: string; is_demo: boolean }>(
       '/auth/register',
       { method: 'POST', body: JSON.stringify({ email, password, full_name }) }
+    ),
+  logout: (email?: string) =>
+    request<{ status: string; message: string }>(
+      `/auth/logout${email ? `?email=${encodeURIComponent(email)}` : ''}`,
+      { method: 'POST' }
+    ),
+  releaseSession: (email: string) =>
+    request<{ status: string; message: string }>(
+      `/auth/release-session?email=${encodeURIComponent(email)}`,
+      { method: 'POST' }
     ),
 
   // Profile

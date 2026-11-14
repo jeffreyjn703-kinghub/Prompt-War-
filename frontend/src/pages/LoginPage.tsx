@@ -14,6 +14,9 @@ import {
   Map,
   ShieldCheck,
   Zap,
+  AlertTriangle,
+  AlertCircle,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,21 +31,30 @@ export const LoginPage: React.FC = () => {
   const [targetRole, setTargetRole] = useState('Full Stack Developer');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  
+  // Restriction & error states
   const [errorMessage, setErrorMessage] = useState('');
+  const [sessionConflict, setSessionConflict] = useState(false);
+  const [duplicateEmailError, setDuplicateEmailError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+    setSessionConflict(false);
+    setDuplicateEmailError(false);
     setIsSubmitting(true);
 
     try {
       if (tab === 'signin') {
-        const result = await login(email, password);
+        const result = await login(email, password, false);
         if (result.success) {
           navigate('/dashboard');
         } else {
           setErrorMessage(result.error || 'Invalid email or password.');
+          if (result.isAlreadyInUse) {
+            setSessionConflict(true);
+          }
         }
       } else {
         if (!fullName.trim()) {
@@ -55,10 +67,36 @@ export const LoginPage: React.FC = () => {
           navigate('/dashboard');
         } else {
           setErrorMessage(result.error || 'Registration failed.');
+          if (result.isAlreadyInUse) {
+            setDuplicateEmailError(true);
+          }
         }
       }
     } catch (err: any) {
-      setErrorMessage(err?.message || 'Authentication error. Please try again.');
+      const msg = err?.detail || err?.message || 'Authentication error. Please try again.';
+      setErrorMessage(msg);
+      if (msg.toLowerCase().includes('already in use')) {
+        if (tab === 'signin') setSessionConflict(true);
+        else setDuplicateEmailError(true);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleForceLogin = async () => {
+    setIsSubmitting(true);
+    setErrorMessage('');
+    setSessionConflict(false);
+    try {
+      const result = await login(email, password, true); // Force override previous active session
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setErrorMessage(result.error || 'Failed to override active session.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Failed to override active session.');
     } finally {
       setIsSubmitting(false);
     }
@@ -67,6 +105,8 @@ export const LoginPage: React.FC = () => {
   const handleDemoLogin = async (learner: 'demo' | 'alex') => {
     setIsSubmitting(true);
     setErrorMessage('');
+    setSessionConflict(false);
+    setDuplicateEmailError(false);
     try {
       await loginDemo(learner);
       navigate('/dashboard');
@@ -166,6 +206,8 @@ export const LoginPage: React.FC = () => {
               onClick={() => {
                 setTab('signin');
                 setErrorMessage('');
+                setSessionConflict(false);
+                setDuplicateEmailError(false);
               }}
               className={`flex-1 py-2 rounded-lg transition-all ${
                 tab === 'signin'
@@ -180,6 +222,8 @@ export const LoginPage: React.FC = () => {
               onClick={() => {
                 setTab('signup');
                 setErrorMessage('');
+                setSessionConflict(false);
+                setDuplicateEmailError(false);
               }}
               className={`flex-1 py-2 rounded-lg transition-all ${
                 tab === 'signup'
@@ -191,8 +235,92 @@ export const LoginPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Error Banner */}
-          {errorMessage && (
+          {/* 1. RESTRICTION ALERT: Concurrent Student Login with Same Email */}
+          {sessionConflict && (
+            <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 text-xs text-amber-900 dark:text-amber-200 space-y-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-sm block text-amber-900 dark:text-amber-100">
+                    Email Already in Use
+                  </span>
+                  <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+                    Multiple student logins with the same email (<strong className="font-semibold">{email}</strong>) are restricted to prevent session overwrite and ensure roadmap integrity. Another active session is currently logged into this account.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-amber-200 dark:border-amber-800/80">
+                <button
+                  type="button"
+                  onClick={handleForceLogin}
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  <span>Terminate Other Session & Sign In Here</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSessionConflict(false);
+                    setErrorMessage('');
+                    setEmail('');
+                  }}
+                  className="w-full sm:w-auto px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-semibold text-xs hover:bg-amber-100/50 transition-colors"
+                >
+                  Use Another Email ID
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 2. RESTRICTION ALERT: Duplicate Email Registration */}
+          {duplicateEmailError && (
+            <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-300 dark:border-rose-700 text-xs text-rose-900 dark:text-rose-200 space-y-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-sm block text-rose-900 dark:text-rose-100">
+                    Email Already in Use
+                  </span>
+                  <p className="mt-0.5 text-xs text-rose-800 dark:text-rose-300 leading-relaxed">
+                    A student account is already registered with <strong className="font-semibold">{email}</strong>. Multiple student accounts with the same email are restricted.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2 border-t border-rose-200 dark:border-rose-800/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTab('signin');
+                    setDuplicateEmailError(false);
+                    setErrorMessage('');
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs shadow-xs transition-colors flex items-center gap-1.5"
+                >
+                  <span>Switch to Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDuplicateEmailError(false);
+                    setErrorMessage('');
+                    setEmail('');
+                  }}
+                  className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-700 text-rose-900 dark:text-rose-200 font-semibold text-xs"
+                >
+                  Use Different Email
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Generic Error Banner (if not sessionConflict or duplicateEmailError) */}
+          {!sessionConflict && !duplicateEmailError && errorMessage && (
             <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
               <span>{errorMessage}</span>
@@ -250,7 +378,12 @@ export const LoginPage: React.FC = () => {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setSessionConflict(false);
+                    setDuplicateEmailError(false);
+                    setErrorMessage('');
+                  }}
                   placeholder="name@example.com"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
@@ -297,6 +430,9 @@ export const LoginPage: React.FC = () => {
                 onClick={() => {
                   setEmail('arjun.kumar@skillpath.ai');
                   setPassword('SkillPath2026!');
+                  setSessionConflict(false);
+                  setDuplicateEmailError(false);
+                  setErrorMessage('');
                 }}
                 className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline"
               >

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api, getAuthToken, setAuthToken, clearAuthToken } from '../api/client';
+import { api, getAuthToken, setAuthToken, clearAuthToken, removeActiveSession } from '../api/client';
 import { Profile } from '../types';
 
 interface AuthContextType {
@@ -7,10 +7,11 @@ interface AuthContextType {
   profile: Profile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string, force?: boolean) => Promise<{ success: boolean; error?: string; isAlreadyInUse?: boolean }>;
+  register: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string; isAlreadyInUse?: boolean }>;
   loginDemo: (learner?: 'demo' | 'alex') => Promise<void>;
   logout: () => void;
+  releaseSession: (email: string) => Promise<void>;
   updateProfile: (data: Partial<Profile>) => Promise<Profile>;
   analyzeProfile: () => Promise<{ status: string; readiness_pct: number; message: string }>;
   refreshProfile: () => Promise<void>;
@@ -56,23 +57,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    email: string,
+    password: string,
+    force: boolean = false
+  ): Promise<{ success: boolean; error?: string; isAlreadyInUse?: boolean }> => {
     setIsLoading(true);
     try {
-      const res = await api.login(email, password);
+      const res = await api.login(email, password, force);
       setAuthToken(res.access_token);
       setToken(res.access_token);
       await refreshProfile();
       return { success: true };
     } catch (err: any) {
-      const errorMsg = err?.message || 'Login failed. Please check your credentials.';
-      return { success: false, error: errorMsg };
+      const errorMsg = err?.detail || err?.message || 'Login failed. Please check your credentials.';
+      const isAlreadyInUse =
+        err?.status === 409 ||
+        err?.code === 'EMAIL_ALREADY_IN_USE' ||
+        errorMsg.toLowerCase().includes('already in use');
+      return { success: false, error: errorMsg, isAlreadyInUse };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (email: string, password: string, fullName: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (
+    email: string,
+    password: string,
+    fullName: string
+  ): Promise<{ success: boolean; error?: string; isAlreadyInUse?: boolean }> => {
     setIsLoading(true);
     try {
       const res = await api.register(email, password, fullName);
@@ -81,8 +94,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await refreshProfile();
       return { success: true };
     } catch (err: any) {
-      const errorMsg = err?.message || 'Registration failed. Please try again.';
-      return { success: false, error: errorMsg };
+      const errorMsg = err?.detail || err?.message || 'Registration failed. Please try again.';
+      const isAlreadyInUse =
+        err?.status === 400 ||
+        err?.code === 'EMAIL_ALREADY_IN_USE' ||
+        errorMsg.toLowerCase().includes('already in use') ||
+        errorMsg.toLowerCase().includes('already registered');
+      return { success: false, error: errorMsg, isAlreadyInUse };
     } finally {
       setIsLoading(false);
     }
@@ -101,9 +119,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    if (profile?.email) {
+      api.logout(profile.email).catch(() => {});
+      removeActiveSession(profile.email);
+    }
     clearAuthToken();
     setToken(null);
     setProfile(null);
+  };
+
+  const releaseSession = async (email: string) => {
+    try {
+      await api.releaseSession(email);
+      removeActiveSession(email);
+    } catch (_) {}
   };
 
   const updateProfile = async (data: Partial<Profile>): Promise<Profile> => {
@@ -129,6 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         loginDemo,
         logout,
+        releaseSession,
         updateProfile,
         analyzeProfile,
         refreshProfile,

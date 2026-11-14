@@ -5,16 +5,26 @@ from app.models.user import User, Profile
 from app.schemas.auth import UserRegister, UserLogin, TokenResponse
 from app.services.auth_service import hash_password, verify_password, create_access_token
 
+from datetime import datetime, timezone
+from typing import Optional
+
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+# In-memory active student session registry: email -> session details
+ACTIVE_SESSIONS: dict[str, dict] = {}
 
 @router.post("/register", response_model=TokenResponse)
 def register(req: UserRegister, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == req.email).first()
+    email_clean = req.email.strip().lower()
+    existing = db.query(User).filter(User.email == email_clean).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(
+            status_code=400,
+            detail="This email ID is already in use. Multiple student accounts with the same email are restricted. Please sign in instead."
+        )
 
     user = User(
-        email=req.email,
+        email=email_clean,
         hashed_password=hash_password(req.password),
         is_demo=False
     )
@@ -31,6 +41,12 @@ def register(req: UserRegister, db: Session = Depends(get_db)):
     db.commit()
 
     token = create_access_token({"sub": str(user.id), "email": user.email})
+    ACTIVE_SESSIONS[email_clean] = {
+        "user_id": user.id,
+        "token": token,
+        "logged_in_at": datetime.now(timezone.utc).isoformat()
+    }
+
     return TokenResponse(
         access_token=token,
         user_id=user.id,
@@ -41,14 +57,28 @@ def register(req: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login(req: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == req.email).first()
+    email_clean = req.email.strip().lower()
+    user = db.query(User).filter(User.email == email_clean).first()
     if not user or not verify_password(req.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # Restriction: check if this student email is already in use by an active session
+    if email_clean in ACTIVE_SESSIONS and not req.force:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This email ID is already in use by an active student session. Multiple student logins with the same email ID are restricted."
+        )
 
     profile = db.query(Profile).filter(Profile.user_id == user.id).first()
     name = profile.full_name if profile else "Learner"
 
     token = create_access_token({"sub": str(user.id), "email": user.email})
+    ACTIVE_SESSIONS[email_clean] = {
+        "user_id": user.id,
+        "token": token,
+        "logged_in_at": datetime.now(timezone.utc).isoformat()
+    }
+
     return TokenResponse(
         access_token=token,
         user_id=user.id,
@@ -79,3 +109,17 @@ def demo_login(learner: str = "demo", db: Session = Depends(get_db)):
         full_name=name,
         is_demo=True
     )
+
+@router.post("/logout")
+def logout(email: Optional[str] = None):
+    if email and email.strip().lower() in ACTIVE_SESSIONS:
+        del ACTIVE_SESSIONS[email.strip().lower()]
+    return {"status": "success", "message": "Session terminated successfully"}
+
+@router.post("/release-session")
+def release_session(email: str):
+    email_clean = email.strip().lower()
+    if email_clean in ACTIVE_SESSIONS:
+        del ACTIVE_SESSIONS[email_clean]
+        return {"status": "success", "message": f"Session released for {email_clean}"}
+    return {"status": "success", "message": "No active lock for this email"}
