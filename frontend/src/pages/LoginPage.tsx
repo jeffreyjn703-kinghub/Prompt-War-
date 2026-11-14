@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-  Sparkles,
   Lock,
   Mail,
   User,
   ArrowRight,
   Eye,
   EyeOff,
-  CheckCircle2,
   Bot,
   Radar,
   Map,
-  ShieldCheck,
   Zap,
   AlertTriangle,
   AlertCircle,
@@ -23,7 +20,7 @@ import { VyntrixaLogo } from '../components/VyntrixaLogo';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, register, loginDemo, isLoading, profile } = useAuth();
+  const { login, register, loginDemo } = useAuth();
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('arjun.kumar@vyntrixa.ai');
@@ -119,22 +116,37 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Top Header Link */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
-        <Link to="/" className="inline-flex items-center gap-2.5 group">
+    <div className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+      {/* Background Image Layer */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <img
+          src="/login-bg.jpg"
+          alt="Educational Background"
+          className="w-full h-full object-cover object-center"
+        />
+        {/* Ambient Dark Gradient & Frosted Overlay for optimal contrast & typography readability */}
+        <div className="absolute inset-0 bg-slate-950/55 dark:bg-slate-950/75 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-slate-950/70" />
+      </div>
+
+      {/* Foreground Content */}
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2.5 group p-2.5 px-4 rounded-2xl bg-white/15 dark:bg-slate-900/40 backdrop-blur-md border border-white/25 dark:border-white/10 shadow-lg hover:bg-white/25 transition-all"
+        >
           <VyntrixaLogo size="lg" />
         </Link>
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-heading">
+        <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-md font-heading">
           {tab === 'signin' ? 'Welcome back to VYNTRIXA' : 'Create your personalized account'}
         </h2>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1.5 text-xs sm:text-sm font-medium text-slate-200/90 drop-shadow-sm">
           Your adaptive learning intelligence
         </p>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-xl px-4">
-        <div className="bg-white dark:bg-slate-900 py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 rounded-3xl">
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-xl px-4">
+        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl shadow-black/30 border border-white/40 dark:border-slate-700/60 rounded-3xl">
           
           {/* Quick Demo Learner 1-Click Cards */}
           <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-violet-50/60 dark:from-indigo-950/40 dark:via-slate-900 dark:to-violet-950/20 border border-indigo-100 dark:border-indigo-900/50">
@@ -473,7 +485,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center mt-6">
           <Link
             to="/dashboard"
-            className="text-xs text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/90 hover:text-white bg-slate-900/50 hover:bg-slate-900/70 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 transition-all shadow-md"
           >
             ← Return to Dashboard
           </Link>
