@@ -12,7 +12,7 @@ from app.schemas.agent import LearnerContext, ProgressEvaluatorOutput
 class ProgressEvaluatorAgent(BaseAgent):
     name: str = "Progress Evaluator"
     description: str = "Monitors completion velocity, score trajectory, detects learning friction or stagnation, and updates readiness %."
-    system_prompt: str = """You are the Progress Evaluator Agent for SkillPath AI.
+    system_prompt: str = """You are the Progress Evaluator Agent for VYNTRIXA.
 Examine historical assessment scores, completed roadmap milestones, and study activity velocity.
 Diagnose whether the learner is ON_TRACK, STRUGGLING, ADVANCING, or STALLED.
 Output valid JSON matching ProgressEvaluatorOutput schema.

@@ -14,7 +14,7 @@ def test_api_health_and_demo_login():
         assert login_res.status_code == 200
         token_data = login_res.json()
         assert "access_token" in token_data
-        assert token_data["email"] == "demo@skillpath.ai"
+        assert token_data["email"] == "demo@vyntrixa.ai"
         assert token_data["full_name"] == "Arjun Kumar"
         token = token_data["access_token"]
         headers = {"Authorization": f"Bearer {token}"}

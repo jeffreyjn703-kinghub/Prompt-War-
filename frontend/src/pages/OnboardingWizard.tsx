@@ -21,6 +21,7 @@ import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { RoleTaxonomyItem, SkillTaxonomyItem, UserSkillItem, CertificationItem, ProjectItem } from '../types';
 import { AgentWorkingModal } from '../components/AgentWorkingModal';
+import { VyntrixaLogo } from '../components/VyntrixaLogo';
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
@@ -160,12 +161,8 @@ export const OnboardingWizard: React.FC = () => {
         {/* Brand Bar */}
         <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-xs">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <span className="font-bold text-sm tracking-tight font-heading">
-              SkillPath <span className="text-indigo-600 dark:text-indigo-400">AI</span> Onboarding
-            </span>
+            <VyntrixaLogo size="sm" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Onboarding</span>
           </div>
           <span className="text-xs text-slate-400 font-mono">
             Step {step} of 4

@@ -13,15 +13,15 @@ import {
 const API_BASE = '/api';
 
 export function getAuthToken(): string | null {
-  return localStorage.getItem('skillpath_token');
+  return localStorage.getItem('vyntrixa_token');
 }
 
 export function setAuthToken(token: string) {
-  localStorage.setItem('skillpath_token', token);
+  localStorage.setItem('vyntrixa_token', token);
 }
 
 export function clearAuthToken() {
-  localStorage.removeItem('skillpath_token');
+  localStorage.removeItem('vyntrixa_token');
 }
 
 // -------------------------------------------------------------
@@ -29,7 +29,7 @@ export function clearAuthToken() {
 // -------------------------------------------------------------
 export const ARJUN_PROFILE: Profile = {
   user_id: 1,
-  email: 'arjun.kumar@skillpath.ai',
+  email: 'arjun.kumar@vyntrixa.ai',
   full_name: 'Arjun Kumar',
   education: 'B.E. Computer Science Engineering (Final Year)',
   target_role: 'Full Stack Developer',
@@ -93,7 +93,7 @@ export const ARJUN_PROFILE: Profile = {
 
 export const ALEX_PROFILE: Profile = {
   user_id: 2,
-  email: 'alex.rivera@skillpath.ai',
+  email: 'alex.rivera@vyntrixa.ai',
   full_name: 'Alex Rivera',
   education: 'M.S. Software Engineering, Georgia Tech',
   target_role: 'Cloud Architect',
@@ -196,7 +196,7 @@ export function createNewUserProfile(name: string, email: string, targetRole: st
 
 function loadStoredProfile(): Profile {
   try {
-    const raw = localStorage.getItem('skillpath_mock_profile');
+    const raw = localStorage.getItem('vyntrixa_mock_profile');
     if (raw) return JSON.parse(raw);
   } catch (_) {}
   return JSON.parse(JSON.stringify(ARJUN_PROFILE));
@@ -204,9 +204,9 @@ function loadStoredProfile(): Profile {
 
 export function saveStoredProfile(p: Profile) {
   try {
-    localStorage.setItem('skillpath_mock_profile', JSON.stringify(p));
+    localStorage.setItem('vyntrixa_mock_profile', JSON.stringify(p));
     if (p.email) {
-      localStorage.setItem(`skillpath_profile_${p.email.toLowerCase()}`, JSON.stringify(p));
+      localStorage.setItem(`vyntrixa_profile_${p.email.toLowerCase()}`, JSON.stringify(p));
     }
   } catch (_) {}
 }
@@ -403,7 +403,7 @@ export const ARJUN_ROADMAP: RoadmapVersion = {
           skill_id: 'javascript',
           item_type: 'exercise',
           title: 'Hands-on Drill: Implement Custom Promise.all and Debounce',
-          provider: 'SkillPath Interactive Code Sandbox',
+          provider: 'VYNTRIXA Interactive Code Sandbox',
           url: 'https://leetcode.com',
           estimated_hours: 4.0,
           is_completed: false,
@@ -450,7 +450,7 @@ export const ARJUN_ROADMAP: RoadmapVersion = {
           skill_id: 'react',
           item_type: 'project',
           title: 'Capstone Mini-Project: Interactive Kanban Board with Drag & Drop',
-          provider: 'SkillPath Project Lab',
+          provider: 'VYNTRIXA Project Lab',
           url: 'https://github.com',
           estimated_hours: 8.0,
           is_completed: false,
@@ -497,7 +497,7 @@ export const ARJUN_ROADMAP: RoadmapVersion = {
           skill_id: 'node-js',
           item_type: 'exercise',
           title: 'Hands-on: Secure User Auth with Refresh Tokens & Role-Based Access',
-          provider: 'SkillPath Security Lab',
+          provider: 'VYNTRIXA Security Lab',
           url: 'https://owasp.org',
           estimated_hours: 7.0,
           is_completed: false,
@@ -532,7 +532,7 @@ export const ARJUN_ROADMAP: RoadmapVersion = {
           skill_id: 'full-stack-dev',
           item_type: 'project',
           title: 'End-to-End Capstone: Multi-Tenant Collaborative Workflow System',
-          provider: 'SkillPath Capstone Review Board',
+          provider: 'VYNTRIXA Capstone Review Board',
           url: 'https://github.com',
           estimated_hours: 14.0,
           is_completed: false,
@@ -641,7 +641,7 @@ export function createPristineRoadmap(targetRole: string = 'Full Stack Developer
             skill_id: 'react',
             item_type: 'project',
             title: 'Interactive Dashboard with Real-time Filters & Data Visualization',
-            provider: 'SkillPath Project Lab',
+            provider: 'VYNTRIXA Project Lab',
             url: 'https://github.com',
             estimated_hours: 6.0,
             is_completed: false,
@@ -735,7 +735,7 @@ export function createPristineRoadmap(targetRole: string = 'Full Stack Developer
             skill_id: 'react',
             item_type: 'project',
             title: 'Full Stack Production Capstone Deployment',
-            provider: 'SkillPath Capstone Hub',
+            provider: 'VYNTRIXA Capstone Hub',
             url: 'https://vercel.com',
             estimated_hours: 6.5,
             is_completed: false,
@@ -750,9 +750,9 @@ export function createPristineRoadmap(targetRole: string = 'Full Stack Developer
 
 export function saveStoredRoadmap(r: RoadmapVersion) {
   try {
-    localStorage.setItem('skillpath_mock_roadmap', JSON.stringify(r));
+    localStorage.setItem('vyntrixa_mock_roadmap', JSON.stringify(r));
     if (MOCK_PROFILE && MOCK_PROFILE.email) {
-      localStorage.setItem(`skillpath_roadmap_${MOCK_PROFILE.email.toLowerCase()}`, JSON.stringify(r));
+      localStorage.setItem(`vyntrixa_roadmap_${MOCK_PROFILE.email.toLowerCase()}`, JSON.stringify(r));
     }
   } catch (_) {}
 }
@@ -760,10 +760,10 @@ export function saveStoredRoadmap(r: RoadmapVersion) {
 function loadStoredRoadmap(): RoadmapVersion {
   try {
     if (MOCK_PROFILE && MOCK_PROFILE.email) {
-      const userRoadmap = localStorage.getItem(`skillpath_roadmap_${MOCK_PROFILE.email.toLowerCase()}`);
+      const userRoadmap = localStorage.getItem(`vyntrixa_roadmap_${MOCK_PROFILE.email.toLowerCase()}`);
       if (userRoadmap) return JSON.parse(userRoadmap);
     }
-    const raw = localStorage.getItem('skillpath_mock_roadmap');
+    const raw = localStorage.getItem('vyntrixa_mock_roadmap');
     if (raw) return JSON.parse(raw);
   } catch (_) {}
   if (MOCK_PROFILE && MOCK_PROFILE.is_new_user) {
@@ -777,8 +777,8 @@ let currentMockRoadmap: RoadmapVersion = loadStoredRoadmap();
 // -------------------------------------------------------------
 // Active Session & Duplicate Account Tracking for Multiple Student Restriction
 // -------------------------------------------------------------
-const ACTIVE_SESSIONS_KEY = 'skillpath_active_student_sessions';
-const REGISTERED_USERS_KEY = 'skillpath_registered_students';
+const ACTIVE_SESSIONS_KEY = 'vyntrixa_active_student_sessions';
+const REGISTERED_USERS_KEY = 'vyntrixa_registered_students';
 export const CLIENT_SESSION_ID = 'client_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
 
 export function getActiveSessions(): Record<string, { email: string; sessionId: string; loggedInAt: string }> {
@@ -823,7 +823,7 @@ export function getRegisteredEmails(): string[] {
     const raw = localStorage.getItem(REGISTERED_USERS_KEY);
     if (raw) return JSON.parse(raw);
   } catch (_) {}
-  return ['arjun.kumar@skillpath.ai', 'alex.rivera@skillpath.ai', 'demo@skillpath.ai', 'alex@skillpath.ai'];
+  return ['arjun.kumar@vyntrixa.ai', 'alex.rivera@vyntrixa.ai', 'demo@vyntrixa.ai', 'alex@vyntrixa.ai'];
 }
 
 export function addRegisteredEmail(email: string) {
@@ -917,7 +917,7 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
   }
 
   if (endpoint === '/auth/register') {
-    let email = 'student@skillpath.ai';
+    let email = 'student@vyntrixa.ai';
     let name = 'New Student';
     if (options.body) {
       try {
@@ -955,7 +955,7 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
   }
 
   if (endpoint === '/auth/login') {
-    let email = 'arjun.kumar@skillpath.ai';
+    let email = 'arjun.kumar@vyntrixa.ai';
     let force = false;
     if (options.body) {
       try {
@@ -977,18 +977,18 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
 
     setActiveSession(email, CLIENT_SESSION_ID);
 
-    if (email === 'alex.rivera@skillpath.ai' || email === 'alex@skillpath.ai') {
+    if (email === 'alex.rivera@vyntrixa.ai' || email === 'alex@vyntrixa.ai') {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ALEX_PROFILE));
       MOCK_PROFILE.is_new_user = false;
       currentMockRoadmap = createPristineRoadmap(ALEX_PROFILE.target_role);
-    } else if (email === 'arjun.kumar@skillpath.ai' || email === 'demo@skillpath.ai') {
+    } else if (email === 'arjun.kumar@vyntrixa.ai' || email === 'demo@vyntrixa.ai') {
       MOCK_PROFILE = JSON.parse(JSON.stringify(ARJUN_PROFILE));
       MOCK_PROFILE.is_new_user = false;
       currentMockRoadmap = JSON.parse(JSON.stringify(ARJUN_ROADMAP));
     } else {
       // Custom student login
       try {
-        const stored = localStorage.getItem(`skillpath_profile_${email}`);
+        const stored = localStorage.getItem(`vyntrixa_profile_${email}`);
         if (stored) {
           MOCK_PROFILE = JSON.parse(stored);
         } else {
@@ -1466,12 +1466,12 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
     if (MOCK_PROFILE.is_new_user) {
       const firstName = MOCK_PROFILE.full_name?.split(' ')[0] || 'Learner';
       return {
-        message: `Welcome to SkillPath AI, ${firstName}! Your personalized learning workspace for ${MOCK_PROFILE.target_role} is initialized. Start by taking your baseline diagnostic assessment or exploring Phase 1 milestones below to establish your verified readiness score.`,
+        message: `Welcome to VYNTRIXA, ${firstName}! Your personalized learning workspace for ${MOCK_PROFILE.target_role} is initialized. Start by taking your baseline diagnostic assessment or exploring Phase 1 milestones below to establish your verified readiness score.`,
         action_suggestion: `Take a 10-minute diagnostic quiz on ${
           MOCK_PROFILE.target_role.includes('Cloud') ? 'Cloud Architecture' : 'JavaScript'
         } to calibrate your baseline competency radar.`,
         nudges: [
-          'Day 1 streak active — welcome to SkillPath AI!',
+          'Day 1 streak active — welcome to VYNTRIXA!',
           `Curriculum synthesized for ${MOCK_PROFILE.target_role}`,
           'Awaiting baseline diagnostic assessment',
         ],
@@ -1603,7 +1603,7 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
         {
           user_id: 1,
           name: 'Arjun Kumar',
-          email: 'arjun.kumar@skillpath.ai',
+          email: 'arjun.kumar@vyntrixa.ai',
           target_role: 'Full Stack Developer',
           readiness_pct: 32.0,
           streak_days: 6,

@@ -9,7 +9,7 @@ from app.schemas.agent import LearnerContext, MentorAgentOutput
 class MentorAgent(BaseAgent):
     name: str = "Mentor Agent"
     description: str = "Empathetic conversational AI guide that explains curriculum changes, motivates through friction, and answers technical questions."
-    system_prompt: str = """You are the AI Mentor for SkillPath AI.
+    system_prompt: str = """You are the Vyntrixa Mentor for VYNTRIXA.
 You have holistic context of the learner's current profile, verified skill levels, career aspirations, and assessment history.
 Provide highly practical, encouraging, and pedagogically clear guidance.
 Explain learning path adjustments transparently, suggest actionable immediate steps, and answer technical questions with code examples when appropriate.
@@ -79,7 +79,7 @@ Explain learning path adjustments transparently, suggest actionable immediate st
             ]
         else:
             msg = (
-                f"Hello {name}! I am your AI Mentor. I have synthesized your skill profile against the **{role}** "
+                f"Hello {name}! I am your Vyntrixa Mentor. I have synthesized your skill profile against the **{role}** "
                 f"benchmark and generated a custom adaptive roadmap. I'm here 24/7 to clarify complex topics, review code, "
                 f"and adapt your path as you progress."
             )
@@ -104,7 +104,7 @@ Explain learning path adjustments transparently, suggest actionable immediate st
         Uses Gemini if available, or rich contextual simulation fallback.
         """
         if llm_client.is_available:
-            system_prompt = f"""You are the friendly, expert AI Mentor on SkillPath AI.
+            system_prompt = f"""You are the friendly, expert Vyntrixa Mentor on VYNTRIXA.
 Learner Context:
 Name: {context.full_name}
 Target Role: {context.target_role}

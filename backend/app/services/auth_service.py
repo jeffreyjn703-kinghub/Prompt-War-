@@ -28,14 +28,20 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire,
+        "iss": settings.JWT_ISSUER,
+        "aud": settings.JWT_AUDIENCE
+    })
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     if not token:
         # Default fallback to demo user if present in dev mode for ease of navigation
-        demo_user = db.query(User).filter(User.email == "demo@skillpath.ai").first()
+        demo_user = db.query(User).filter(User.email == "demo@vyntrixa.ai").first()
+        if not demo_user:
+            demo_user = db.query(User).filter(User.email.ilike("demo@%")).first()
         if demo_user:
             return demo_user
         raise HTTPException(
@@ -44,7 +50,8 @@ def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session 
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        # Decode without strict audience rejection to allow smooth transition
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_aud": False})
         user_id: int = payload.get("sub")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token payload")

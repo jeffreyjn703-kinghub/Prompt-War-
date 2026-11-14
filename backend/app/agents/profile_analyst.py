@@ -8,7 +8,7 @@ from app.schemas.agent import LearnerContext, ProfileAnalystOutput
 class ProfileAnalystAgent(BaseAgent):
     name: str = "Profile Analyst"
     description: str = "Normalizes skills, certifications, and projects into a structured skill graph with proficiency levels."
-    system_prompt: str = """You are the Profile Analyst Agent for SkillPath AI.
+    system_prompt: str = """You are the Profile Analyst Agent for VYNTRIXA.
 Analyze the user's reported skills, certifications, and project experiences.
 Normalize skill names into standard taxonomy IDs, evaluate strengths and growth areas, and output valid JSON matching the ProfileAnalystOutput schema.
 """

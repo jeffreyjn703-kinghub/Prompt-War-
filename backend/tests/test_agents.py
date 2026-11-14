@@ -120,7 +120,7 @@ def test_adaptive_replan_goal_changed_preserves_completed_skills(test_db):
     and re-plans only the delta roadmap.
     """
     # Create test user
-    user = User(email="test_goal_switch@skillpath.ai", hashed_password="pw")
+    user = User(email="test_goal_switch@vyntrixa.ai", hashed_password="pw")
     test_db.add(user)
     test_db.flush()
 

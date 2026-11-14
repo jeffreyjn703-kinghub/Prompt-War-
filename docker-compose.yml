@@ -5,21 +5,25 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: vyntrixa-backend
+    container_name: vyntrixa-backend
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./skillpath.db
-      - SECRET_KEY=skillpath-super-secret-jwt-key-2026-production
+      - DATABASE_URL=sqlite:///./vyntrixa.db
+      - SECRET_KEY=vyntrixa-super-secret-jwt-key-2026-production
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - GEMINI_MODEL=gemini-2.0-flash
     volumes:
-      - ./backend/skillpath.db:/app/skillpath.db
+      - ./backend/vyntrixa.db:/app/vyntrixa.db
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: vyntrixa-frontend
+    container_name: vyntrixa-frontend
     ports:
       - "5173:80"
     depends_on:

@@ -5,7 +5,7 @@ import httpx
 from pydantic import BaseModel
 from app.config import settings
 
-logger = logging.getLogger("skillpath.llm")
+logger = logging.getLogger("vyntrixa.llm")
 
 class LLMClient:
     def __init__(self):

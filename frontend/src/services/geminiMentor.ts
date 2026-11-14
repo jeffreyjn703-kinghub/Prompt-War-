@@ -1,5 +1,5 @@
 /**
- * Gemini AI Mentor Service for SkillPath AI
+ * Gemini AI Mentor Service for VYNTRIXA
  * 
  * Provides:
  * 1. Live Google Gemini 2.0 Flash streaming when API key is provided
@@ -19,7 +19,7 @@ export interface MentorContext {
   lastScore?: { skill: string; score: number };
 }
 
-const STORAGE_KEY = 'skillpath_gemini_key';
+const STORAGE_KEY = 'vyntrixa_gemini_key';
 // Encoded default key for automatic out-of-the-box streaming
 const _B64_KEY = 'QVEuQWI4Uk42SzkzaTU1UV9VWkJIeWZZeU9hOVZhWEt0QThqNVAxbzZZYkNScDdRT3VXMFE=';
 const DEFAULT_GEMINI_KEY = typeof atob === 'function' ? atob(_B64_KEY) : '';
@@ -52,7 +52,7 @@ export function hasGeminiApiKey(): boolean {
  * Builds system prompt for Gemini incorporating full learner context
  */
 function buildSystemPrompt(ctx: MentorContext): string {
-  return `You are the empathetic, expert AI Career Mentor for "SkillPath AI", an adaptive multi-agent learning platform.
+  return `You are the empathetic, expert Vyntrixa Mentor for "VYNTRIXA", an adaptive multi-agent learning platform.
 Learner Context:
 - Name: ${ctx.fullName || 'Arjun Kumar'}
 - Target Role: ${ctx.targetRole || 'Full Stack Developer'}
@@ -433,7 +433,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import Optional
 
-app = FastAPI(title="SkillPath API")
+app = FastAPI(title="VYNTRIXA API")
 
 class SkillUpdateRequest(BaseModel):
     skill_name: str
@@ -608,8 +608,8 @@ CMD ["nginx", "-g", "daemon off;"]
 \`\`\`
 
 #### Core CLI Commands:
-- \`docker build -t skillpath-app .\`: Build image.
-- \`docker run -p 8000:8000 skillpath-app\`: Run container forwarding port 8000.
+- \`docker build -t vyntrixa-app .\`: Build image.
+- \`docker run -p 8000:8000 vyntrixa-app\`: Run container forwarding port 8000.
 - \`docker compose up -d\`: Launch multi-container services in background.`;
   }
 

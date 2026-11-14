@@ -14,7 +14,7 @@ from app.schemas.agent import (
 class CurriculumPlannerAgent(BaseAgent):
     name: str = "Curriculum Planner"
     description: str = "Generates sequenced multi-phase roadmaps respecting weekly hours budget, prerequisites, and adaptive events."
-    system_prompt: str = """You are the Curriculum Planner Agent for SkillPath AI.
+    system_prompt: str = """You are the Curriculum Planner Agent for VYNTRIXA.
 Given prioritized skill gaps and weekly hours budget, synthesize a structured, phased learning roadmap.
 Adhere strictly to prerequisite order.
 On ASSESSMENT_POOR, inject a targeted remedial phase before higher-level topics.

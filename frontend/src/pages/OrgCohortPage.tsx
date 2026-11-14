@@ -50,7 +50,7 @@ export const OrgCohortPage: React.FC = () => {
     {
       user_id: 2,
       name: 'Alex Rivera',
-      email: 'alex@skillpath.ai',
+      email: 'alex@vyntrixa.ai',
       target_role: 'Frontend Developer',
       readiness_pct: 28.0,
       streak_days: 1,
@@ -62,7 +62,7 @@ export const OrgCohortPage: React.FC = () => {
     {
       user_id: 3,
       name: 'Devin Vance',
-      email: 'devin@skillpath.ai',
+      email: 'devin@vyntrixa.ai',
       target_role: 'Backend Engineer',
       readiness_pct: 65.0,
       streak_days: 12,
@@ -73,7 +73,7 @@ export const OrgCohortPage: React.FC = () => {
     {
       user_id: 4,
       name: 'Maya Patel',
-      email: 'maya@skillpath.ai',
+      email: 'maya@vyntrixa.ai',
       target_role: 'Full Stack Developer',
       readiness_pct: 42.0,
       streak_days: 4,
@@ -110,7 +110,7 @@ export const OrgCohortPage: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `skillpath_cohort_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `vyntrixa_cohort_report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

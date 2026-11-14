@@ -1,0 +1,842 @@
+{
+  "javascript": {
+    "mcqs": [
+      {
+        "question_text": "What is the output of `typeof NaN` in JavaScript?",
+        "options": [
+          "'undefined'",
+          "'number'",
+          "'object'",
+          "'NaN'"
+        ],
+        "correct_answer": 1,
+        "explanation": "In JavaScript, NaN (Not-a-Number) is technically a numeric data type per IEEE 754 spec.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which method creates a new array with all elements that pass the test implemented by the provided function?",
+        "options": [
+          "map()",
+          "filter()",
+          "forEach()",
+          "reduce()"
+        ],
+        "correct_answer": 1,
+        "explanation": "filter() returns a subset array containing elements where the callback returned true.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does a closure retain access to even after the outer function has executed?",
+        "options": [
+          "Only global variables",
+          "The outer function's scope variables",
+          "The DOM tree",
+          "The window object only"
+        ],
+        "correct_answer": 1,
+        "explanation": "A closure retains references to variables in its lexical parent scope even after the parent terminates.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "In the JavaScript Event Loop, which queue executes first after the synchronous call stack empties?",
+        "options": [
+          "Microtask queue (Promises, queueMicrotask)",
+          "Macrotask queue (setTimeout, setInterval)",
+          "Render queue",
+          "I/O polling queue"
+        ],
+        "correct_answer": 0,
+        "explanation": "Microtasks (such as Promise handlers) have higher priority and empty completely before macrotasks.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What will `console.log([] == ![])` evaluate to?",
+        "options": [
+          "false",
+          "true",
+          "TypeError",
+          "undefined"
+        ],
+        "correct_answer": 1,
+        "explanation": "`![]` coerces to false. Then `[] == false` coerces `[]` to '' and then 0 == 0, resulting in true.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "What is the primary difference between `let` and `var` declaration?",
+        "options": [
+          "var is block-scoped; let is function-scoped",
+          "let is block-scoped and temporal dead zone applies; var is function-scoped",
+          "let cannot be reassigned",
+          "var creates immutable references"
+        ],
+        "correct_answer": 1,
+        "explanation": "let is constrained to block scope and enters a Temporal Dead Zone until initialized.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does `Promise.allSettled()` return?",
+        "options": [
+          "A promise that rejects as soon as any promise rejects",
+          "A promise that resolves only if all input promises resolve",
+          "A promise that resolves after all given promises have either resolved or rejected, with status objects",
+          "An array of rejected errors"
+        ],
+        "correct_answer": 2,
+        "explanation": "Promise.allSettled() waits for all promises to settle and returns an array of {status, value/reason}.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "Which operator is the nullish coalescing operator in modern JavaScript?",
+        "options": [
+          "||",
+          "??",
+          "?.",
+          "&&"
+        ],
+        "correct_answer": 1,
+        "explanation": "?? evaluates the right-hand side only if the left-hand side is null or undefined (not false or 0).",
+        "difficulty": "beginner"
+      }
+    ],
+    "practical": {
+      "question_text": "Write a JavaScript function `debounce(fn, delay)` that limits how often a function can fire. Explain how the timer and closures are used.",
+      "rubric": "debounce, setTimeout, clearTimeout, closure, return function, timer",
+      "difficulty": "intermediate"
+    }
+  },
+  "react": {
+    "mcqs": [
+      {
+        "question_text": "Why must React state not be mutated directly (e.g., `state.count = 5`)?",
+        "options": [
+          "It causes immediate browser reload",
+          "React relies on referential comparison to detect state changes and schedule re-renders",
+          "It throws a syntax error",
+          "JavaScript objects are read-only in React"
+        ],
+        "correct_answer": 1,
+        "explanation": "React checks object reference identity (`Object.is`) to know if a component should re-render.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "When does the cleanup function in a `useEffect` hook execute?",
+        "options": [
+          "Only when the component mounts",
+          "Before the effect runs again and when the component unmounts",
+          "Only after page refresh",
+          "Whenever any prop changes regardless of dependency array"
+        ],
+        "correct_answer": 1,
+        "explanation": "The cleanup function runs right before the effect re-runs with new dependencies, and when unmounting.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is the purpose of the `key` prop in React lists?",
+        "options": [
+          "It styles individual list elements",
+          "It provides a unique identifier to help React's reconciliation algorithm track element identity across renders",
+          "It passes data to child components automatically",
+          "It prevents list items from being clicked"
+        ],
+        "correct_answer": 1,
+        "explanation": "Keys help React identify which items have changed, been added, or been removed in virtual DOM diffing.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does `useCallback(fn, deps)` return?",
+        "options": [
+          "The executed value of fn",
+          "A memoized version of the callback function that only changes if dependencies change",
+          "A state variable",
+          "A reference to a DOM node"
+        ],
+        "correct_answer": 1,
+        "explanation": "useCallback memoizes the callback instance across renders to prevent unnecessary re-renders of memoized child components.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "Which hook should be used when you need to store a mutable value that does NOT trigger a re-render when modified?",
+        "options": [
+          "useState",
+          "useRef",
+          "useMemo",
+          "useReducer"
+        ],
+        "correct_answer": 1,
+        "explanation": "useRef returns a mutable object whose `.current` property can be modified without causing a re-render.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is React 18 Concurrent Rendering primarily designed to achieve?",
+        "options": [
+          "Multi-threaded JavaScript execution",
+          "Interruptible rendering to keep the user interface responsive during heavy updates",
+          "Replacing CSS Grid with Canvas",
+          "Eliminating virtual DOM diffing entirely"
+        ],
+        "correct_answer": 1,
+        "explanation": "Concurrent React allows rendering work to be paused, resumed, or abandoned if a higher-priority user interaction occurs.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "What happens if you update state inside a component body outside of hooks or handlers?",
+        "options": [
+          "State updates once silently",
+          "An infinite re-render loop will occur",
+          "React disables the component",
+          "No effect"
+        ],
+        "correct_answer": 1,
+        "explanation": "Updating state during render causes React to immediately re-render, triggering the update again in an infinite loop.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is the primary benefit of custom React hooks?",
+        "options": [
+          "Increasing render speed by 10x",
+          "Reusing stateful logic across multiple components cleanly",
+          "Replacing CSS modules",
+          "Exposing global window functions"
+        ],
+        "correct_answer": 1,
+        "explanation": "Custom hooks allow extracting and sharing stateful logic without duplicating code or using higher-order components.",
+        "difficulty": "intermediate"
+      }
+    ],
+    "practical": {
+      "question_text": "Implement a custom hook `useFetch(url)` in React that manages `data`, `loading`, and `error` states, and cancels ongoing requests if the component unmounts or URL changes.",
+      "rubric": "useState, useEffect, AbortController, cleanup, signal, loading, error, data",
+      "difficulty": "intermediate"
+    }
+  },
+  "nodejs": {
+    "mcqs": [
+      {
+        "question_text": "What is the underlying C library that provides the event loop and asynchronous I/O in Node.js?",
+        "options": [
+          "V8",
+          "libuv",
+          "glibc",
+          "Boost"
+        ],
+        "correct_answer": 1,
+        "explanation": "libuv is the multi-platform C library that handles the event loop, thread pool, and non-blocking I/O.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "Why should you avoid synchronous methods like `fs.readFileSync` in production servers?",
+        "options": [
+          "They crash the operating system",
+          "They block the single-threaded Node.js event loop, preventing all other client requests from being handled",
+          "They only work on Windows",
+          "They consume too much hard disk space"
+        ],
+        "correct_answer": 1,
+        "explanation": "Synchronous I/O stops the entire main event loop, stalling every concurrent client connection.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "In Express.js middleware, what happens if you forget to call `next()` or send a response?",
+        "options": [
+          "An error is thrown immediately",
+          "The client request hangs indefinitely until timeout",
+          "The server restarts",
+          "The next route handler runs automatically"
+        ],
+        "correct_answer": 1,
+        "explanation": "Middleware must explicitly call next() to yield control to the next handler or finish the HTTP response.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "How do Node.js Streams handle large datasets efficiently?",
+        "options": [
+          "By loading the entire file into RAM first",
+          "By processing data piece-by-piece in chunks without buffering the full dataset in memory",
+          "By compressing files with gzip on the fly",
+          "By spawning a new VM process for each byte"
+        ],
+        "correct_answer": 1,
+        "explanation": "Streams read and write data in small sequential chunks, preventing out-of-memory errors on large files.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is backpressure in Node.js streams?",
+        "options": [
+          "Network packet loss",
+          "A mechanism that pauses reading when the write stream buffer is full until the consumer catches up",
+          "CPU thermal throttling",
+          "Database connection timeout"
+        ],
+        "correct_answer": 1,
+        "explanation": "Backpressure signals the readable stream to pause when the writable stream's buffer exceeds highWaterMark.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "What is the difference between `process.nextTick()` and `setImmediate()`?",
+        "options": [
+          "nextTick runs in the current operation phase before the event loop continues; setImmediate runs in the check phase of the loop",
+          "setImmediate has higher priority than nextTick",
+          "They are identical aliases",
+          "setImmediate runs synchronously"
+        ],
+        "correct_answer": 0,
+        "explanation": "process.nextTick fires immediately after the current operation finishes before the event loop advances to the next phase.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "Which header should be set to enable Cross-Origin Resource Sharing in Express?",
+        "options": [
+          "Access-Control-Allow-Origin",
+          "Allow-Client-Host",
+          "X-Forwarded-Host",
+          "Content-Security-Policy-Host"
+        ],
+        "correct_answer": 0,
+        "explanation": "Access-Control-Allow-Origin specifies which origin domains are permitted to read the response.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "How should uncaught Promise rejections be handled in Node.js 16+?",
+        "options": [
+          "They are ignored silently",
+          "They terminate the Node.js process with a non-zero exit code unless an 'unhandledRejection' listener is attached",
+          "They are converted to console.warn",
+          "They trigger an automatic server reboot"
+        ],
+        "correct_answer": 1,
+        "explanation": "Modern Node terminates the process on unhandled promise rejections to avoid leaving the system in an indeterminate state.",
+        "difficulty": "intermediate"
+      }
+    ],
+    "practical": {
+      "question_text": "Write an Express.js middleware function `validateApiKey(req, res, next)` that inspects the `x-api-key` header against an environment variable, returning a 401 JSON error on failure.",
+      "rubric": "req.headers, x-api-key, status 401, json response, next()",
+      "difficulty": "beginner"
+    }
+  },
+  "sql": {
+    "mcqs": [
+      {
+        "question_text": "What is the main difference between `WHERE` and `HAVING` clauses in SQL?",
+        "options": [
+          "WHERE filters rows before aggregation; HAVING filters aggregated groups after GROUP BY",
+          "WHERE is only for numeric columns",
+          "HAVING is faster than WHERE",
+          "There is no functional difference"
+        ],
+        "correct_answer": 0,
+        "explanation": "WHERE filters source rows before grouping; HAVING filters aggregate results after grouping.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which join returns all rows from the left table and matched rows from the right table, filling with NULL where unmatched?",
+        "options": [
+          "INNER JOIN",
+          "LEFT JOIN (LEFT OUTER JOIN)",
+          "RIGHT JOIN",
+          "FULL OUTER JOIN"
+        ],
+        "correct_answer": 1,
+        "explanation": "A LEFT JOIN preserves every row from the left table regardless of whether a match exists on the right.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does the ACID property 'Atomicity' guarantee in a database transaction?",
+        "options": [
+          "Every transaction is executed concurrently",
+          "All operations within the transaction succeed together, or all are rolled back completely",
+          "Data is compressed on disk",
+          "Queries return in under 1 millisecond"
+        ],
+        "correct_answer": 1,
+        "explanation": "Atomicity ensures 'all-or-nothing' execution of a transactional block.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is the primary trade-off of adding multiple indexes to a SQL table?",
+        "options": [
+          "Faster SELECT queries at the cost of slower INSERT, UPDATE, and DELETE queries and increased disk usage",
+          "Decreased data consistency",
+          "Loss of foreign key constraints",
+          "Inability to use JOIN operations"
+        ],
+        "correct_answer": 0,
+        "explanation": "Indexes speed up read lookups, but every write operation must also update the B-tree index structures.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is a Common Table Expression (CTE) defined with in SQL?",
+        "options": [
+          "WITH clause",
+          "CREATE TEMP TABLE",
+          "DECLARE",
+          "USING"
+        ],
+        "correct_answer": 0,
+        "explanation": "CTEs are defined using `WITH cte_name AS (SELECT ...)` to create readable, modular temporary result sets.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What does the `ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC)` window function do?",
+        "options": [
+          "Calculates average salary per department",
+          "Assigns a sequential integer to each employee partitioned by department, sorted by salary descending",
+          "Deletes duplicate rows",
+          "Filters out the lowest salary"
+        ],
+        "correct_answer": 1,
+        "explanation": "It assigns 1, 2, 3... to rows within each department partition ordered by salary descending.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "Which normalization form requires eliminating repeating groups and ensuring atomic values in each column?",
+        "options": [
+          "First Normal Form (1NF)",
+          "Second Normal Form (2NF)",
+          "Third Normal Form (3NF)",
+          "Boyce-Codd Normal Form (BCNF)"
+        ],
+        "correct_answer": 0,
+        "explanation": "1NF requires each table column to contain atomic (indivisible) values with no repeating groups.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What kind of index is best suited for equality and range queries on high-cardinality columns in PostgreSQL?",
+        "options": [
+          "B-Tree Index",
+          "GIN Index",
+          "GiST Index",
+          "Hash Index"
+        ],
+        "correct_answer": 0,
+        "explanation": "B-Tree is the default and most versatile index structure for sorting, equality, and range queries (<, <=, =, >=, >).",
+        "difficulty": "intermediate"
+      }
+    ],
+    "practical": {
+      "question_text": "Write a SQL query that finds the top 3 highest earning employees in each department from an `employees` table with columns `(id, name, salary, department_id)` using a window function.",
+      "rubric": "DENSE_RANK or ROW_NUMBER, OVER, PARTITION BY department_id, ORDER BY salary DESC, CTE or subquery, rank <= 3",
+      "difficulty": "intermediate"
+    }
+  },
+  "python": {
+    "mcqs": [
+      {
+        "question_text": "What is the time complexity of looking up a key in a standard Python dictionary on average?",
+        "options": [
+          "O(1)",
+          "O(n)",
+          "O(log n)",
+          "O(n^2)"
+        ],
+        "correct_answer": 0,
+        "explanation": "Python dictionaries are implemented as hash tables with average O(1) key lookup complexity.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is the difference between `list.append(x)` and `list.extend(x)`?",
+        "options": [
+          "append adds x as a single element; extend iterates over x and appends each element",
+          "extend modifies in-place; append returns a new copy",
+          "append is only for strings",
+          "They are identical"
+        ],
+        "correct_answer": 0,
+        "explanation": "append([1,2]) inserts a nested list, whereas extend([1,2]) unpacks and appends each element individually.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does the `yield` keyword do inside a Python function?",
+        "options": [
+          "Stops the program execution",
+          "Turns the function into a generator that produces values lazily without keeping the entire sequence in memory",
+          "Raises an exception",
+          "Allocates memory on the heap"
+        ],
+        "correct_answer": 1,
+        "explanation": "yield produces a value and suspends function state, resuming on the next `next()` iteration call.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is Python's Global Interpreter Lock (GIL)?",
+        "options": [
+          "A security protocol that prevents malicious imports",
+          "A mutex that allows only one native thread to execute Python bytecode at a time in CPython",
+          "A lock on file write operations",
+          "A debugger tool"
+        ],
+        "correct_answer": 1,
+        "explanation": "The GIL ensures thread-safety in CPython's memory management by restricting bytecode execution to one thread at a time.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "How do `@dataclass` classes simplify Python object modeling?",
+        "options": [
+          "They speed up runtime by compiling to C",
+          "They automatically generate `__init__`, `__repr__`, `__eq__`, and type annotations based on defined fields",
+          "They connect to a database automatically",
+          "They prevent inheritance"
+        ],
+        "correct_answer": 1,
+        "explanation": "dataclasses automatically synthesize boilerplate dunder methods based on type-annotated attributes.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What will `bool([])` evaluate to in Python?",
+        "options": [
+          "True",
+          "False",
+          "None",
+          "TypeError"
+        ],
+        "correct_answer": 1,
+        "explanation": "Empty collections (lists, tuples, dicts, strings) are falsy in Python.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is the purpose of Python's `contextlib` and the `with` statement?",
+        "options": [
+          "To declare global variables",
+          "To ensure reliable resource acquisition and cleanup (e.g. closing files, releasing locks) even if exceptions occur",
+          "To execute multithreaded tasks",
+          "To format output text"
+        ],
+        "correct_answer": 1,
+        "explanation": "Context managers implement `__enter__` and `__exit__` to guarantee cleanup when exiting the block.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "In FastAPI, how are query parameters distinguished from path parameters in a route handler?",
+        "options": [
+          "Path parameters appear in the path URL template `{param}`; other function arguments not in the path default to query parameters",
+          "By using a special @query decorator",
+          "Path parameters must always be integers",
+          "FastAPI requires an XML configuration file"
+        ],
+        "correct_answer": 0,
+        "explanation": "If an argument is declared in the route path e.g. `/items/{item_id}`, it is a path parameter; otherwise query parameter.",
+        "difficulty": "beginner"
+      }
+    ],
+    "practical": {
+      "question_text": "Write a Python decorator `@retry(max_attempts=3)` that retries an async or sync function if an exception is raised, with exponential backoff.",
+      "rubric": "decorator, functools.wraps, try/except, loop, max_attempts, time.sleep or asyncio.sleep",
+      "difficulty": "advanced"
+    }
+  },
+  "git": {
+    "mcqs": [
+      {
+        "question_text": "What is the difference between `git merge` and `git rebase`?",
+        "options": [
+          "Merge creates a new commit joining histories; rebase replays commits on top of another base creating a linear history",
+          "Rebase deletes previous commits permanently",
+          "Merge cannot handle conflicts",
+          "There is no difference"
+        ],
+        "correct_answer": 0,
+        "explanation": "Merge preserves exact historical chronology with a merge commit; rebase re-writes commit hashes for a clean linear log.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "Which command allows you to save uncommitted changes temporarily without committing them?",
+        "options": [
+          "git cache",
+          "git stash",
+          "git pause",
+          "git store"
+        ],
+        "correct_answer": 1,
+        "explanation": "git stash saves modified tracked files to a temporary stack and resets the working tree to HEAD.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does `git cherry-pick <commit-hash>` do?",
+        "options": [
+          "Deletes the specified commit",
+          "Applies the changes introduced by a specific existing commit from another branch onto the current branch",
+          "Creates a cherry tag",
+          "Displays commit diffs"
+        ],
+        "correct_answer": 1,
+        "explanation": "cherry-pick picks a specific commit from one branch and copies its diff onto your current branch.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is the git 'staging area' (index)?",
+        "options": [
+          "The remote GitHub server",
+          "An intermediate staging space where changes are formatted and reviewed before forming a commit",
+          "The trash bin for discarded files",
+          "The merge conflict resolver"
+        ],
+        "correct_answer": 1,
+        "explanation": "The index/staging area holds the snapshot of changes staged with `git add` that will be included in the next commit.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which command is used to safely find the commit that introduced a bug using binary search?",
+        "options": [
+          "git bisect",
+          "git inspect",
+          "git binary",
+          "git find-bug"
+        ],
+        "correct_answer": 0,
+        "explanation": "git bisect uses binary search through commit history to quickly isolate which commit broke functionality.",
+        "difficulty": "advanced"
+      },
+      {
+        "question_text": "What happens when you run `git reset --hard HEAD~1`?",
+        "options": [
+          "Moves HEAD back by 1 commit and discards all changes in the working directory and staging area",
+          "Only deletes the commit message",
+          "Pushes the commit to remote",
+          "Creates a backup branch"
+        ],
+        "correct_answer": 0,
+        "explanation": "--hard resets both index and working tree. Any uncommitted changes are discarded.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What does a `.gitignore` file do?",
+        "options": [
+          "Encrypts secret files",
+          "Specifies intentionally untracked patterns that Git should ignore",
+          "Accelerates git clone speed",
+          "Formats Markdown files"
+        ],
+        "correct_answer": 1,
+        "explanation": ".gitignore lists filenames, directory patterns, and extensions that Git should never track.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is the function of `git reflog`?",
+        "options": [
+          "It records all updates to branch tips and HEAD in your local repository, allowing recovery of 'lost' commits",
+          "It pushes code to GitHub",
+          "It lists remote repositories",
+          "It optimizes repository size"
+        ],
+        "correct_answer": 0,
+        "explanation": "reflog is a safety net tracking every movement of HEAD, enabling recovery of reset or deleted commits.",
+        "difficulty": "advanced"
+      }
+    ],
+    "practical": {
+      "question_text": "You committed code to `main` accidentally instead of a feature branch `feature/auth`. Write the exact sequence of Git commands to move that commit to `feature/auth` without losing changes.",
+      "rubric": "git branch feature/auth, git reset --hard HEAD~1, git checkout feature/auth",
+      "difficulty": "intermediate"
+    }
+  },
+  "html": {
+    "mcqs": [
+      {
+        "question_text": "Which HTML5 semantic element should encapsulate autonomous, self-contained content intended to be independently distributable (e.g. blog post)?",
+        "options": [
+          "<section>",
+          "<article>",
+          "<div>",
+          "<aside>"
+        ],
+        "correct_answer": 1,
+        "explanation": "<article> is specifically designed for self-contained compositions like forum posts or newspaper articles.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is the primary accessibility purpose of the `alt` attribute on an `<img>` tag?",
+        "options": [
+          "To show a tooltip on mouse hover",
+          "To provide an equivalent text alternative for screen readers and when images fail to load",
+          "To improve image compression",
+          "To define the image width"
+        ],
+        "correct_answer": 1,
+        "explanation": "alt text enables screen readers to convey image meaning to visually impaired users.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which attribute on a `<form>` element specifies how data is encoded when submitted (e.g., for file uploads)?",
+        "options": [
+          "enctype='multipart/form-data'",
+          "method='upload'",
+          "type='file'",
+          "action='multipart'"
+        ],
+        "correct_answer": 0,
+        "explanation": "enctype='multipart/form-data' is required when uploading binary files via HTML forms.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What does the `<meta name='viewport' content='width=device-width, initial-scale=1.0'>` tag do?",
+        "options": [
+          "Renders the page in full screen",
+          "Sets the viewport width to device screen width and establishes a 1:1 scale for responsive design",
+          "Enables GPU acceleration",
+          "Prevents user zooming entirely"
+        ],
+        "correct_answer": 1,
+        "explanation": "It configures mobile browsers to render the document matching device physical dimensions.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which attribute should be added to an `<input>` field to make it mandatory before form submission?",
+        "options": [
+          "validate",
+          "required",
+          "strict",
+          "mandatory"
+        ],
+        "correct_answer": 1,
+        "explanation": "The boolean `required` attribute triggers browser native validation.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What is the difference between `<script async>` and `<script defer>`?",
+        "options": [
+          "async executes as soon as downloaded (unordered); defer downloads in parallel and executes in HTML order after DOM is parsed",
+          "defer runs before HTML parsing begins",
+          "async only works for inline scripts",
+          "There is no functional difference"
+        ],
+        "correct_answer": 0,
+        "explanation": "defer preserves script order and guarantees execution after HTML document parsing is complete.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "Which HTML element represents the disclosure widget from which the user can obtain additional information or controls?",
+        "options": [
+          "<details> and <summary>",
+          "<accordion>",
+          "<dropdown>",
+          "<expand>"
+        ],
+        "correct_answer": 0,
+        "explanation": "<details> with a nested <summary> provides an accessible built-in disclosure widget without JavaScript.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What ARIA role should be used to notify screen readers of dynamic content updates without losing focus?",
+        "options": [
+          "aria-live='polite'",
+          "aria-hidden='false'",
+          "role='alerting'",
+          "aria-update='true'"
+        ],
+        "correct_answer": 0,
+        "explanation": "aria-live='polite' announces dynamic mutations when the screen reader user is idle.",
+        "difficulty": "intermediate"
+      }
+    ],
+    "practical": {
+      "question_text": "Write a semantically accessible HTML markup structure for a user login form, including labels associated with inputs, proper input types, validation attributes, and a submit button.",
+      "rubric": "<form>, <label for='...'>, <input id='...' type='email'>, <input type='password'>, required, <button type='submit'>",
+      "difficulty": "beginner"
+    }
+  },
+  "css": {
+    "mcqs": [
+      {
+        "question_text": "What does the `box-sizing: border-box;` CSS declaration do?",
+        "options": [
+          "Adds a heavy border around every element",
+          "Includes padding and border in the element's total specified width and height",
+          "Removes margins",
+          "Makes elements render as flex containers"
+        ],
+        "correct_answer": 1,
+        "explanation": "border-box ensures width and height properties define the total size including padding and borders.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "In CSS Flexbox, what property aligns items along the cross axis?",
+        "options": [
+          "justify-content",
+          "align-items",
+          "flex-direction",
+          "align-content"
+        ],
+        "correct_answer": 1,
+        "explanation": "justify-content aligns along the main axis; align-items aligns along the cross axis.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which CSS specificity rank is highest among the following?",
+        "options": [
+          "Class selector (.card)",
+          "ID selector (#header)",
+          "Element selector (div)",
+          "Universal selector (*)"
+        ],
+        "correct_answer": 1,
+        "explanation": "ID selectors (0,1,0,0) have higher specificity than classes (0,0,1,0) and elements (0,0,0,1).",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "What does `display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));` achieve?",
+        "options": [
+          "Creates exactly 3 columns",
+          "Creates a fully responsive grid that fits as many columns of at least 250px as possible without media queries",
+          "Scales fonts automatically",
+          "Hides overflowing items"
+        ],
+        "correct_answer": 1,
+        "explanation": "auto-fit + minmax creates responsive grid columns that wrap automatically based on viewport width.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What is the difference between `position: absolute` and `position: relative`?",
+        "options": [
+          "relative is positioned relative to its normal flow position; absolute is positioned relative to its nearest positioned ancestor",
+          "absolute is relative to the screen; relative is relative to parent",
+          "relative takes elements out of normal document flow",
+          "They are identical"
+        ],
+        "correct_answer": 0,
+        "explanation": "absolute takes the element out of normal flow and offsets it from the nearest ancestor with non-static position.",
+        "difficulty": "beginner"
+      },
+      {
+        "question_text": "Which CSS property is best for performance when animating elements?",
+        "options": [
+          "width and height",
+          "top and left",
+          "transform and opacity",
+          "margin and padding"
+        ],
+        "correct_answer": 2,
+        "explanation": "transform and opacity animations are handled on the compositor thread on the GPU, avoiding reflow and repaint.",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What does the `:has()` relational pseudo-class allow in modern CSS?",
+        "options": [
+          "Styling a parent element based on its descendant children or conditions",
+          "Checking for hover states only",
+          "Applying styles only if JavaScript is active",
+          "Selecting HTML custom elements"
+        ],
+        "correct_answer": 0,
+        "explanation": ":has() serves as a parent selector (e.g. `article:has(img)` styles articles containing an image).",
+        "difficulty": "intermediate"
+      },
+      {
+        "question_text": "What unit represents 1% of the viewport height in CSS?",
+        "options": [
+          "1rem",
+          "1vh",
+          "1em",
+          "1ch"
+        ],
+        "correct_answer": 1,
+        "explanation": "1vh equals 1% of the viewport's height.",
+        "difficulty": "beginner"
+      }
+    ],
+    "practical": {
+      "question_text": "Write the CSS rules to center an element both vertically and horizontally inside its container using Flexbox or CSS Grid, and explain how it behaves responsively.",
+      "rubric": "display: flex, justify-content: center, align-items: center (or display: grid, place-items: center), height/min-height",
+      "difficulty": "beginner"
+    }
+  }
+}

@@ -13,7 +13,7 @@ from app.models.agent_run import AgentRunTrace
 from app.schemas.agent import LearnerContext
 from app.services.roadmap_service import RoadmapService
 
-logger = logging.getLogger("skillpath.orchestrator")
+logger = logging.getLogger("vyntrixa.orchestrator")
 
 class Orchestrator:
     def __init__(self):

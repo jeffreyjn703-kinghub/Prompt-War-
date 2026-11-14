@@ -12,7 +12,7 @@ from app.services.auth_service import hash_password
 from app.agents.orchestrator import orchestrator
 from app.schemas.agent import LearnerContext
 
-logger = logging.getLogger("skillpath.seeder")
+logger = logging.getLogger("vyntrixa.seeder")
 
 def seed_database(db: Session):
     """
@@ -94,7 +94,13 @@ def seed_database(db: Session):
         db.commit()
 
     # 5. Seed Demo Learner (Arjun Kumar)
-    demo_email = "demo@skillpath.ai"
+    # Migrate any legacy demo user from skillpath.ai to vyntrixa.ai
+    legacy_demo = db.query(User).filter(User.email == "demo@skillpath.ai").first()
+    if legacy_demo:
+        legacy_demo.email = "demo@vyntrixa.ai"
+        db.commit()
+
+    demo_email = "demo@vyntrixa.ai"
     demo_user = db.query(User).filter(User.email == demo_email).first()
     if not demo_user:
         logger.info("Seeding Demo Learner (Arjun Kumar: Python 4, SQL 3, HTML 2 -> Full Stack Developer, Readiness 32%)...")
@@ -174,7 +180,12 @@ def seed_database(db: Session):
         run_sync(orchestrator.run(init_context, db))
 
     # 6. Seed Second Learner (Alex Rivera) with immediate adaptive demoable scenario (poor assessment -> remedial phase)
-    alex_email = "alex@skillpath.ai"
+    legacy_alex = db.query(User).filter(User.email == "alex@skillpath.ai").first()
+    if legacy_alex:
+        legacy_alex.email = "alex@vyntrixa.ai"
+        db.commit()
+
+    alex_email = "alex@vyntrixa.ai"
     alex_user = db.query(User).filter(User.email == alex_email).first()
     if not alex_user:
         logger.info("Seeding Adaptive Demo Learner (Alex Rivera: Poor JS Assessment -> Remedial Phase Active)...")

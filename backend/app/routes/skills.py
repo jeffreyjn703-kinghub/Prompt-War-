@@ -1,6 +1,7 @@
+import hashlib
 import json
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.taxonomy import SkillTaxonomy
@@ -9,6 +10,7 @@ router = APIRouter(prefix="/api/skills", tags=["Skills Taxonomy"])
 
 @router.get("")
 def list_skills(
+    response: Response,
     category: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     db: Session = Depends(get_db)
@@ -32,6 +34,11 @@ def list_skills(
             "description": s.description,
             "prerequisites": prereqs
         })
+    body_str = json.dumps(out, sort_keys=True)
+    etag = f'"{hashlib.md5(body_str.encode()).hexdigest()}"'
+    response.headers["ETag"] = etag
+    response.headers["Cache-Control"] = "public, max-age=86400, stale-while-revalidate=604800"
+    response.headers["Last-Modified"] = "Sun, 01 Jan 2026 00:00:00 GMT"
     return out
 
 @router.get("/categories")

@@ -92,8 +92,11 @@ def demo_login(learner: str = "demo", db: Session = Depends(get_db)):
     """
     One-click instant login for Demo Learner ('demo' -> Sarah Chen, 'alex' -> Alex Rivera)
     """
-    target_email = "alex@skillpath.ai" if learner == "alex" else "demo@skillpath.ai"
+    target_email = "alex@vyntrixa.ai" if learner == "alex" else "demo@vyntrixa.ai"
     user = db.query(User).filter(User.email == target_email).first()
+    if not user:
+        legacy_email = "alex@skillpath.ai" if learner == "alex" else "demo@skillpath.ai"
+        user = db.query(User).filter(User.email == legacy_email).first()
     
     if not user:
         raise HTTPException(status_code=404, detail="Demo user not found. Please restart server to seed data.")

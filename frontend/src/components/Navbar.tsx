@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { VyntrixaLogo } from './VyntrixaLogo';
 
 interface NavbarProps {
   onOpenMentor: () => void;
@@ -46,17 +47,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenMentor }) => {
         {/* Brand */}
         <div className="flex items-center gap-6">
           <Link to="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                SkillPath <span className="text-violet-500">AI</span>
-              </span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                Agentic
-              </span>
-            </div>
+            <VyntrixaLogo size="md" />
+            <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20">
+              Agentic
+            </span>
           </Link>
 
           {/* Navigation Links */}

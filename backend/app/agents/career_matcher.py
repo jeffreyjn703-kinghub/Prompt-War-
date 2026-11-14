@@ -8,7 +8,7 @@ from app.schemas.agent import CareerMatcherOutput, LearnerContext, MatchedSkill
 class CareerMatcherAgent(BaseAgent):
     name: str = "Career Matcher"
     description: str = "Evaluates skills against job role benchmark requirements, computes match % and identifies skill gaps."
-    system_prompt: str = """You are the Career Matcher Agent for SkillPath AI.
+    system_prompt: str = """You are the Career Matcher Agent for VYNTRIXA.
 Compare the user's current skill proficiencies against target role requirements.
 Calculate the match percentage precisely, categorize skills into matched, partial, and missing, and determine the top 3 recommended roles.
 Return valid JSON matching the CareerMatcherOutput schema.

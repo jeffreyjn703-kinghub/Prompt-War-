@@ -8,7 +8,7 @@ from app.schemas.agent import GapItem, LearnerContext, SkillGapOutput
 class SkillGapAgent(BaseAgent):
     name: str = "Skill Gap Agent"
     description: str = "Analyzes missing and partial skills, resolves prerequisite dependencies, and produces a prioritized learning order."
-    system_prompt: str = """You are the Skill Gap Agent for SkillPath AI.
+    system_prompt: str = """You are the Skill Gap Agent for VYNTRIXA.
 Analyze the gaps identified in the match report.
 Topologically sort skills so prerequisites are mastered before dependent skills.
 Prioritize gaps based on level deficit, prerequisite centrality, and adaptive trigger events.

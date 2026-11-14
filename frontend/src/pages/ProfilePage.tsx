@@ -34,7 +34,7 @@ export const ProfilePage: React.FC = () => {
 
   // Form states
   const [fullName, setFullName] = useState(profile?.full_name || 'Arjun Kumar');
-  const [email, setEmail] = useState(profile?.email || 'arjun.kumar@skillpath.ai');
+  const [email, setEmail] = useState(profile?.email || 'arjun.kumar@vyntrixa.ai');
   const [education, setEducation] = useState(profile?.education || 'B.E. Computer Science Engineering (Final Year)');
   const [bio, setBio] = useState('Aspiring Full Stack Engineer passionate about asynchronous systems, backend performance, and AI-native applications.');
   const [targetRole, setTargetRole] = useState(profile?.target_role || 'Full Stack Developer');
@@ -1178,7 +1178,7 @@ export const ProfilePage: React.FC = () => {
             <div className="p-6 rounded-3xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 space-y-3">
               <span className="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center gap-2">
                 <LogOut className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                Sign Out of SkillPath AI
+                Sign Out of VYNTRIXA
               </span>
               <p className="text-[11px] text-rose-700 dark:text-rose-300 leading-relaxed">
                 Signing out will clear your local JWT session token. You can sign back in at any time or use one-click demo login.

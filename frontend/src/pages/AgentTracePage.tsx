@@ -99,10 +99,10 @@ export const AgentTracePage: React.FC = () => {
             Multi-Agent State Machine
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-heading mt-1">
-            Agent Activity & Execution Traces
+            VYNTRIXA Agent Activity
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-            Centralized Orchestrator routing events to 8 specialized satellite agents with explicit hand-offs and deterministic rule-engine fallbacks.
+            Centralized Orchestrator routing events to the specialized VYNTRIXA Agents with explicit hand-offs and deterministic rule-engine fallbacks.
           </p>
         </div>
 

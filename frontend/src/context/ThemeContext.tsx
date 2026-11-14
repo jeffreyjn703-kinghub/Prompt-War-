@@ -11,7 +11,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('skillpath_theme');
+    const saved = localStorage.getItem('vyntrixa_theme') || localStorage.getItem('skillpath_theme');
     return (saved as Theme) || 'dark';
   });
 
@@ -22,7 +22,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('skillpath_theme', theme);
+    localStorage.setItem('vyntrixa_theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

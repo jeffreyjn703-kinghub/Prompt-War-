@@ -18,6 +18,7 @@ import {
   Award,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { VyntrixaLogo } from '../components/VyntrixaLogo';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -52,12 +53,7 @@ export const LandingPage: React.FC = () => {
       <header className="h-16 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-xs">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white font-heading">
-              SkillPath <span className="text-indigo-600 dark:text-indigo-400">AI</span>
-            </span>
+            <VyntrixaLogo size="sm" />
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -88,18 +84,18 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Autonomous Multi-Agent Career Engine • 100% Deterministic Fallback</span>
+            <span>AI-Powered Adaptive Learning Intelligence • Learn adaptively. Grow intelligently.</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-heading leading-tight text-slate-900 dark:text-white">
             Your skills. Your goal.<br />
             <span className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-              Your personalized path.
+              Your adaptive path.
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            SkillPath AI analyzes your skill gaps against target tech roles and synthesizes an adaptive roadmap through multiple collaborating AI agents. No generic checklists—just verified mastery.
+            VYNTRIXA analyzes your skill gaps against target tech roles and synthesizes an adaptive roadmap through collaborating VYNTRIXA Agents. No generic checklists—just verified mastery.
           </p>
 
           {/* Action CTAs */}
@@ -142,7 +138,7 @@ export const LandingPage: React.FC = () => {
               <div className="w-3 h-3 rounded-full bg-amber-400" />
               <div className="w-3 h-3 rounded-full bg-emerald-400" />
               <span className="text-[11px] font-mono text-slate-400 ml-2">
-                skillpath-ai.app/dashboard • Target: Full Stack Developer
+                vyntrixa.app/dashboard • Target: Full Stack Developer
               </span>
             </div>
 
@@ -167,7 +163,7 @@ export const LandingPage: React.FC = () => {
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/60 dark:border-slate-800 space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">AI Mentor Insight</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Vyntrixa Mentor Insight</span>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">
                   "Python and SQL verified. Next milestone: Close the JavaScript execution model gap."
                 </p>
@@ -185,7 +181,7 @@ export const LandingPage: React.FC = () => {
               Deterministic Process
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-heading mt-1">
-              How SkillPath AI Works
+              How VYNTRIXA Works
             </h2>
           </div>
 
@@ -207,7 +203,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8 AI Agents Working For You */}
+      {/* VYNTRIXA Agents Working For You */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -215,7 +211,7 @@ export const LandingPage: React.FC = () => {
               Architecture & Collaboration
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-heading mt-1">
-              8 AI Agents Working Collaboratively For You
+              VYNTRIXA Agents Working Collaboratively For You
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl mx-auto">
               Not a monolithic LLM prompt. Specialized agents communicate through explicit hand-offs and a shared <code>LearnerContext</code> state object.
@@ -246,7 +242,7 @@ export const LandingPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center text-xs text-slate-400">
-        <p>SkillPath AI • Senior Full-Stack & Agentic Architecture • 2026 Production Standard</p>
+        <p>© 2026 VYNTRIXA. AI-Powered Adaptive Learning Intelligence.</p>
       </footer>
     </div>
   );

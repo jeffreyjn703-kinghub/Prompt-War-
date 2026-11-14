@@ -8,7 +8,7 @@ from app.schemas.agent import LearnerContext, ResourceRecommenderOutput, Roadmap
 class ResourceRecommenderAgent(BaseAgent):
     name: str = "Resource Recommender"
     description: str = "Matches roadmap phases with diverse courses, tutorials, docs, and projects from the catalog with tailored rationale."
-    system_prompt: str = """You are the Resource Recommender Agent for SkillPath AI.
+    system_prompt: str = """You are the Resource Recommender Agent for VYNTRIXA.
 Map curated high-quality resources to each phase of the learner's curriculum roadmap.
 Ensure a balanced mix of documentation, structured courses, hands-on coding exercises, and portfolio projects.
 Provide a clear, pedagogical 'why this' rationale for each recommended item.

@@ -1,10 +1,21 @@
 import os
+import shutil
 import base64
+
 _DEFAULT_KEY = base64.b64decode("QVEuQWI4Uk42SzkzaTU1UV9VWkJIeWZZeU9hOVZhWEt0QThqNVAxbzZZYkNScDdRT3VXMFE=").decode("utf-8")
 
+# Migration fallback: If legacy skillpath.db exists and vyntrixa.db does not, migrate it
+if os.path.exists("./skillpath.db") and not os.path.exists("./vyntrixa.db"):
+    try:
+        shutil.copy("./skillpath.db", "./vyntrixa.db")
+    except Exception:
+        pass
+
 class Settings:
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./skillpath.db")
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "skillpath-super-secret-jwt-key-2026-production")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./vyntrixa.db" if os.path.exists("./vyntrixa.db") or not os.path.exists("./skillpath.db") else "sqlite:///./skillpath.db")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "vyntrixa-super-secret-jwt-key-2026-production")
+    JWT_ISSUER: str = "vyntrixa"
+    JWT_AUDIENCE: str = "vyntrixa"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", _DEFAULT_KEY)

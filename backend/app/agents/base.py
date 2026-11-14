@@ -7,7 +7,7 @@ from app.llm.client import llm_client
 from app.models.agent_run import AgentRunTrace
 from app.schemas.agent import LearnerContext
 
-logger = logging.getLogger("skillpath.agents")
+logger = logging.getLogger("vyntrixa.agents")
 
 class BaseAgent:
     name: str = "BaseAgent"
@@ -15,7 +15,7 @@ class BaseAgent:
     system_prompt: str = ""
 
     def __init__(self):
-        self.logger = logging.getLogger(f"skillpath.agent.{self.name.lower().replace(' ', '_')}")
+        self.logger = logging.getLogger(f"vyntrixa.agent.{self.name.lower().replace(' ', '_')}")
 
     async def execute(self, context: LearnerContext, db: Session) -> LearnerContext:
         """

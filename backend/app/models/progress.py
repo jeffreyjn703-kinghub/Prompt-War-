@@ -32,3 +32,13 @@ class ActivityLog(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, default="")
     created_at = Column(DateTime, default=utcnow)
+
+class ClientMutation(Base):
+    __tablename__ = "client_mutations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    client_uuid = Column(String(100), unique=True, index=True, nullable=False)
+    mutation_type = Column(String(50), nullable=False)
+    status = Column(String(20), default="APPLIED")
+    applied_at = Column(DateTime, default=utcnow)

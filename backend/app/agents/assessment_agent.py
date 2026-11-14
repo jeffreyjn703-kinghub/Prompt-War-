@@ -11,7 +11,7 @@ from app.schemas.agent import LearnerContext
 class AssessmentAgent(BaseAgent):
     name: str = "Assessment Agent"
     description: str = "Generates targeted quizzes (8-10 MCQs + 1 practical challenge), evaluates student submissions, and validates verified skill levels."
-    system_prompt: str = """You are the Assessment Agent for SkillPath AI.
+    system_prompt: str = """You are the Assessment Agent for VYNTRIXA.
 Generate balanced, rigorous technical assessments consisting of multiple-choice questions plus a practical coding scenario.
 Grade submissions objectively, pinpoint weak subtopics, and award verified proficiency levels.
 """

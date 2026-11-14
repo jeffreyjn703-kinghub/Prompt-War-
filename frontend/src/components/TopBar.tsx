@@ -22,6 +22,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
 import { RoleTaxonomyItem } from '../types';
+import { VyntrixaLogo } from './VyntrixaLogo';
 
 interface TopBarProps {
   onOpenMentor: () => void;
@@ -129,6 +130,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
       <header className="h-16 px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between sticky top-0 z-20 transition-colors">
         {/* Search Input Button */}
         <div className="flex items-center gap-3 flex-1 max-w-md">
+          {/* Mobile Logo on top bar */}
+          <div className="flex items-center gap-2 md:hidden shrink-0">
+            <VyntrixaLogo showWordmark={false} size="sm" />
+          </div>
+
           <button
             onClick={() => setSearchModalOpen(true)}
             className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
@@ -257,7 +263,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all hover:scale-102"
           >
             <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">AI Mentor</span>
+            <span className="hidden sm:inline">Vyntrixa Mentor</span>
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
@@ -284,7 +290,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
                     {profile?.full_name || 'Arjun Kumar'}
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
-                    {profile?.email || 'arjun.kumar@skillpath.ai'}
+                    {profile?.email || 'arjun.kumar@vyntrixa.ai'}
                   </span>
                   <div className="mt-2 flex items-center justify-between text-[10px] font-semibold">
                     <span className="px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 truncate">

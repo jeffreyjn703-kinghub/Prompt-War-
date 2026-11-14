@@ -19,6 +19,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { VyntrixaLogo } from './VyntrixaLogo';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -55,21 +56,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse })
       {/* Brand Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80">
         <NavLink to="/dashboard" className="flex items-center gap-2.5 overflow-hidden group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform shrink-0">
-            <Sparkles className="w-5 h-5" />
-          </div>
+          <VyntrixaLogo showWordmark={!collapsed} size="sm" />
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 font-heading">
-                SkillPath <span className="text-indigo-600 dark:text-indigo-400">AI</span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                  v2.5
-                </span>
-              </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                Multi-Agent Career Engine
-              </span>
-            </div>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 ml-1">
+              v2.5
+            </span>
           )}
         </NavLink>
 

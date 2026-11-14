@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
@@ -38,6 +38,26 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const [isMentorOpen, setIsMentorOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/': 'VYNTRIXA — AI-Powered Adaptive Learning Intelligence',
+      '/login': 'Sign In · VYNTRIXA',
+      '/onboard': 'Onboarding · VYNTRIXA',
+      '/dashboard': 'Dashboard · VYNTRIXA',
+      '/profile': 'Profile · VYNTRIXA',
+      '/analysis': 'Skill Analysis · VYNTRIXA',
+      '/match': 'Career Match · VYNTRIXA',
+      '/roadmap': 'Roadmap · VYNTRIXA',
+      '/assessments': 'Assessments · VYNTRIXA',
+      '/progress': 'Progress · VYNTRIXA',
+      '/mentor': 'Vyntrixa Mentor · VYNTRIXA',
+      '/trace': 'Agent Activity · VYNTRIXA',
+      '/cohort': 'Cohort View · VYNTRIXA',
+      '/settings': 'Settings · VYNTRIXA',
+    };
+    document.title = titles[location.pathname] || 'VYNTRIXA — AI-Powered Adaptive Learning Intelligence';
+  }, [location.pathname]);
 
   // Minimal layout for landing, login, and onboarding
   const isMinimal = location.pathname === '/' || location.pathname === '/onboard' || location.pathname === '/login';

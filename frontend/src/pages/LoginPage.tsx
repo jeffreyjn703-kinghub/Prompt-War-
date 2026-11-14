@@ -19,14 +19,15 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { VyntrixaLogo } from '../components/VyntrixaLogo';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, register, loginDemo, isLoading, profile } = useAuth();
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin');
-  const [email, setEmail] = useState('arjun.kumar@skillpath.ai');
-  const [password, setPassword] = useState('SkillPath2026!');
+  const [email, setEmail] = useState('arjun.kumar@vyntrixa.ai');
+  const [password, setPassword] = useState('Vyntrixa2026!');
   const [fullName, setFullName] = useState('Arjun Kumar');
   const [targetRole, setTargetRole] = useState('Full Stack Developer');
   const [showPassword, setShowPassword] = useState(false);
@@ -122,18 +123,13 @@ export const LoginPage: React.FC = () => {
       {/* Top Header Link */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
         <Link to="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white font-heading">
-            SkillPath <span className="text-indigo-600 dark:text-indigo-400">AI</span>
-          </span>
+          <VyntrixaLogo size="lg" />
         </Link>
         <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-heading">
-          {tab === 'signin' ? 'Sign in to your learning path' : 'Create your personalized account'}
+          {tab === 'signin' ? 'Welcome back to VYNTRIXA' : 'Create your personalized account'}
         </h2>
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          Adaptive career roadmaps driven by 8 collaborating AI agents
+          Your adaptive learning intelligence
         </p>
       </div>
 
@@ -428,8 +424,8 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setEmail('arjun.kumar@skillpath.ai');
-                  setPassword('SkillPath2026!');
+                  setEmail('arjun.kumar@vyntrixa.ai');
+                  setPassword('Vyntrixa2026!');
                   setSessionConflict(false);
                   setDuplicateEmailError(false);
                   setErrorMessage('');

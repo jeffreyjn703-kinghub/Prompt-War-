@@ -1,6 +1,7 @@
 {
-  "name": "skillpath-ai",
+  "name": "vyntrixa",
   "version": "1.0.0",
+  "description": "AI-Powered Adaptive Learning Intelligence",
   "private": true,
   "scripts": {
     "build": "cd frontend && npm install && npm run build",

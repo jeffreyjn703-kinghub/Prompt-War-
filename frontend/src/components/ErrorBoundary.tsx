@@ -21,7 +21,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('SkillPath UI Uncaught Error:', error, errorInfo);
+    console.error('VYNTRIXA UI Uncaught Error:', error, errorInfo);
   }
 
   private handleReload = () => {
@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
               Something went wrong
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-              SkillPath encountered an unexpected render state. We have logged the trace and preserved your learning session.
+              VYNTRIXA encountered an unexpected render state. We have logged the trace and preserved your learning session.
             </p>
 
             {this.state.error && (

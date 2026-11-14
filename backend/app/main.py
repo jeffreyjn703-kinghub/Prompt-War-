@@ -18,13 +18,14 @@ from app.routes import (
     mentor,
     agents,
     org,
+    sync,
 )
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
-logger = logging.getLogger("skillpath.main")
+logger = logging.getLogger("vyntrixa.main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,8 +46,8 @@ async def lifespan(app: FastAPI):
     logger.info("Application shutting down...")
 
 app = FastAPI(
-    title="SkillPath AI - Agentic Adaptive Learning Platform",
-    description="Multi-agent career readiness and personalized learning path generator with zero API key requirement.",
+    title="VYNTRIXA API",
+    description="AI-Powered Adaptive Learning Intelligence - Multi-agent career readiness and personalized learning path engine.",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -74,11 +75,12 @@ app.include_router(assessments.router)
 app.include_router(mentor.router)
 app.include_router(agents.router)
 app.include_router(org.router)
+app.include_router(sync.router)
 
 @app.get("/api/health")
 def health_check():
     return {
         "status": "healthy",
-        "service": "SkillPath AI Backend",
+        "service": "VYNTRIXA API",
         "version": "1.0.0"
     }
