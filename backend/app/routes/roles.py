@@ -1,0 +1,23 @@
+import json
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.taxonomy import RoleTaxonomy
+
+router = APIRouter(prefix="/api/roles", tags=["Role Taxonomy"])
+
+@router.get("")
+def list_roles(db: Session = Depends(get_db)):
+    roles = db.query(RoleTaxonomy).all()
+    out = []
+    for r in roles:
+        reqs = json.loads(r.required_skills) if r.required_skills else {}
+        out.append({
+            "role_id": r.role_id,
+            "title": r.title,
+            "department": r.department,
+            "description": r.description,
+            "required_skills": reqs,
+            "total_skills_count": len(reqs)
+        })
+    return out
