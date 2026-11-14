@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Bot,
@@ -10,7 +10,6 @@ import {
   BrainCircuit,
   Key,
   Check,
-  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -39,7 +38,6 @@ export const MentorPage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [guidance, setGuidance] = useState<any>(null);
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 
   // Gemini Key Management
@@ -50,29 +48,86 @@ export const MentorPage: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const handleSend = useCallback(async (textToSend?: string) => {
+    const query = (textToSend || input).trim();
+    if (!query || isStreaming) return;
 
-  useEffect(() => {
-    setHasKey(hasGeminiApiKey());
-    setKeyInput(getGeminiApiKey());
-  }, []);
+    setInput('');
+    const userMsg: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: query,
+      timestamp: 'Just now',
+    };
+
+    const mentorPlaceholder: ChatMessage = {
+      id: `mentor-${Date.now()}`,
+      sender: 'mentor',
+      text: '',
+      timestamp: 'Just now',
+    };
+
+    setMessages((prev) => [...prev, userMsg, mentorPlaceholder]);
+    setIsStreaming(true);
+
+    try {
+      const ctx: MentorContext = {
+        fullName: profile?.full_name,
+        targetRole: profile?.target_role,
+        readinessPct: profile?.readiness_pct,
+        streakDays: profile?.streak_days,
+        weeklyHours: profile?.weekly_hours,
+      };
+
+      await streamMentorChat(query, ctx, (token) => {
+        setMessages((prev) => {
+          const next = [...prev];
+          const lastIdx = next.length - 1;
+          if (lastIdx >= 0 && next[lastIdx].sender === 'mentor') {
+            next[lastIdx] = {
+              ...next[lastIdx],
+              text: next[lastIdx].text + token,
+            };
+          }
+          return next;
+        });
+      });
+    } catch (err: any) {
+      setMessages((prev) => {
+        const next = [...prev];
+        const lastIdx = next.length - 1;
+        if (lastIdx >= 0) {
+          next[lastIdx] = {
+            ...next[lastIdx],
+            text: `Vyntrixa Mentor is currently operating in offline mode. Error: ${err?.message || 'Connection failed'}`,
+          };
+        }
+        return next;
+      });
+    } finally {
+      setIsStreaming(false);
+    }
+  }, [input, isStreaming, profile]);
 
   useEffect(() => {
     const fetchGuidance = async () => {
       try {
         const data = await api.getMentorGuidance();
-        setGuidance(data);
-        if (messages.length === 0) {
-          setMessages([
-            {
-              id: 'init-1',
-              sender: 'mentor',
-              text: data.message,
-              timestamp: 'Just now',
-              resourceTitle: 'JavaScript Event Loop & Microtask Queue Interactive Simulation',
-              resourceUrl: 'https://javascript.info/',
-            },
-          ]);
-        }
+        setMessages((prev) => {
+          if (prev.length === 0) {
+            return [
+              {
+                id: 'init-1',
+                sender: 'mentor',
+                text: data.message,
+                timestamp: 'Just now',
+                resourceTitle: 'JavaScript Event Loop & Microtask Queue Interactive Simulation',
+                resourceUrl: 'https://javascript.info/',
+              },
+            ];
+          }
+          return prev;
+        });
       } catch (err) {
         console.warn('Could not load mentor guidance', err);
       }
@@ -90,7 +145,7 @@ export const MentorPage: React.FC = () => {
       handleSend(st.initialQuery);
       window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location.state, handleSend]);
 
   const handleSaveKey = () => {
     setGeminiApiKey(keyInput);
@@ -106,69 +161,6 @@ export const MentorPage: React.FC = () => {
     setGeminiApiKey('');
     setKeyInput('');
     setHasKey(false);
-  };
-
-  const handleSend = async (textToSend?: string) => {
-    const query = (textToSend || input).trim();
-    if (!query || isStreaming) return;
-
-    setInput('');
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: query,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-
-    const mentorMsgId = (Date.now() + 1).toString();
-    const initialMentorMsg: ChatMessage = {
-      id: mentorMsgId,
-      sender: 'mentor',
-      text: '',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages((prev) => [...prev, initialMentorMsg]);
-    setIsStreaming(true);
-
-    try {
-      const mentorCtx: MentorContext = {
-        fullName: profile?.full_name,
-        targetRole: profile?.target_role,
-        readinessPct: profile?.readiness_pct,
-        streakDays: profile?.streak_days,
-        weeklyHours: profile?.weekly_hours,
-        activePhaseTitle: 'Phase 1: Remedial JavaScript & Engine Mechanics',
-        weakSkills: ['JavaScript', 'React', 'Node.js & APIs'],
-        lastScore: { skill: 'JavaScript', score: 48 },
-      };
-
-      await streamMentorChat(query, mentorCtx, (accumulatedText) => {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === mentorMsgId ? { ...msg, text: accumulatedText } : msg
-          )
-        );
-      });
-    } catch (err) {
-      console.warn('Mentor streaming error:', err);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === mentorMsgId
-            ? {
-                ...msg,
-                text:
-                  msg.text ||
-                  "In your journey toward Full Stack Developer, focusing on JavaScript fundamentals before React and Node.js will yield the highest returns. What topic would you like to drill into?",
-              }
-            : msg
-        )
-      );
-    } finally {
-      setIsStreaming(false);
-    }
   };
 
   const handleAddToRoadmap = (title: string) => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, ArrowRight, CheckCircle2, ChevronDown, Sparkles, X } from 'lucide-react';
+import { AlertCircle, ArrowRight, Sparkles, X } from 'lucide-react';
 
 interface ReplanBannerProps {
   title: string;
@@ -19,7 +19,6 @@ export const ReplanBanner: React.FC<ReplanBannerProps> = ({
   const [showDiffModal, setShowDiffModal] = useState(false);
 
   const isPoor = triggerEvent === 'ASSESSMENT_POOR';
-  const isGoal = triggerEvent === 'GOAL_CHANGED';
   const isStrong = triggerEvent === 'ASSESSMENT_STRONG';
 
   const badgeColor = isPoor

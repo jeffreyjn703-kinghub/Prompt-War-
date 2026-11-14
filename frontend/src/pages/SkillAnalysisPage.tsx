@@ -21,13 +21,9 @@ import {
   AlertTriangle,
   ArrowRight,
   Search,
-  Filter,
   BarChart3,
   Activity,
-  Layers,
-  Sparkles,
   ChevronRight,
-  TrendingUp,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -43,7 +39,7 @@ export const SkillAnalysisPage: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'verified' | 'self-rated'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [search, setSearch] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {

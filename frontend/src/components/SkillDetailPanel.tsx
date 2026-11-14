@@ -3,16 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   X,
   ShieldCheck,
-  UserCheck,
-  ArrowRight,
   ExternalLink,
   BookOpen,
   Code2,
   Video,
   FileText,
   Clock,
-  Layers,
-  Sparkles,
 } from 'lucide-react';
 import { api } from '../api/client';
 
@@ -25,7 +21,7 @@ export const SkillDetailPanel: React.FC<SkillDetailPanelProps> = ({ skillId, onC
   const navigate = useNavigate();
   const [resources, setResources] = useState<any[]>([]);
   const [skillInfo, setSkillInfo] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!skillId) return;

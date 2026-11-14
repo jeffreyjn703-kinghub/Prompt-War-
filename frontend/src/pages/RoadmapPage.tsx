@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Map,
   CheckCircle2,
   Circle,
   ExternalLink,
   History,
   RotateCw,
   Clock,
-  Sparkles,
-  AlertCircle,
   Calendar,
   X,
   BookOpen,
@@ -20,27 +17,22 @@ import {
   ChevronUp,
   LayoutList,
   CalendarDays,
-  Target,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { RoadmapVersion, RoadmapPhase, RoadmapItem } from '../types';
+import { RoadmapVersion } from '../types';
 
 export const RoadmapPage: React.FC = () => {
   const { profile } = useAuth();
   const [roadmap, setRoadmap] = useState<RoadmapVersion | null>(null);
   const [versions, setVersions] = useState<any[]>([]);
   const [showVersionModal, setShowVersionModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [viewMode, setViewMode] = useState<'timeline' | 'calendar'>('timeline');
   const [collapsedPhases, setCollapsedPhases] = useState<Record<number, boolean>>({});
 
-  useEffect(() => {
-    loadRoadmap();
-  }, [profile?.user_id]);
-
-  const loadRoadmap = async () => {
+  const loadRoadmap = useCallback(async () => {
     setIsLoading(true);
     try {
       const [rm, vers] = await Promise.all([
@@ -54,7 +46,11 @@ export const RoadmapPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadRoadmap();
+  }, [loadRoadmap, profile?.user_id]);
 
   const handleToggleItem = async (itemId: number) => {
     try {

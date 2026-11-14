@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Users,
-  TrendingUp,
   AlertTriangle,
   Flame,
-  CheckCircle2,
-  Briefcase,
-  ChevronRight,
-  ShieldAlert,
   Download,
-  AlertCircle,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { CohortOverviewData } from '../types';
 
 export const OrgCohortPage: React.FC = () => {
   const [cohortData, setCohortData] = useState<CohortOverviewData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCohort = async () => {

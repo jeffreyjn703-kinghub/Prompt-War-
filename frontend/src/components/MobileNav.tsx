@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Radar,
   Map,
   CheckCircle2,
   TrendingUp,

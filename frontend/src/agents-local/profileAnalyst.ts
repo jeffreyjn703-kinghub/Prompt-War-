@@ -48,6 +48,10 @@ export class ProfileAnalystLocal {
 
     const experienceLevel = avgLevel >= 3.5 ? 'Senior' : avgLevel >= 2.0 ? 'Mid-level' : 'Junior / Entry';
 
+    if (!context.metadata) {
+      context.metadata = {};
+    }
+
     context.metadata['normalized_profile'] = {
       normalized_skills: normalizedSkills,
       skill_categories: skillCategories,

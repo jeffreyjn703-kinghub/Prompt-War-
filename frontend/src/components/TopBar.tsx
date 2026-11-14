@@ -9,10 +9,8 @@ import {
   ChevronDown,
   Briefcase,
   Check,
-  Sparkles,
   Command,
   X,
-  AlertTriangle,
   ArrowRight,
   User,
   LogOut,
@@ -209,6 +207,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
               onClick={() => setNotificationOpen(!notificationOpen)}
               className="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
               title="Notifications"
+              aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900" />
@@ -253,6 +252,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
             onClick={toggleTheme}
             className="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             title="Toggle color theme"
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -261,6 +261,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
           <button
             onClick={onOpenMentor}
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all hover:scale-102"
+            aria-label="Open Vyntrixa AI Mentor"
           >
             <Bot className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Vyntrixa Mentor</span>
@@ -276,6 +277,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
               title="My Account & Profile"
+              aria-label="Account and profile options"
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
                 {(profile?.full_name || 'Arjun Kumar').charAt(0)}

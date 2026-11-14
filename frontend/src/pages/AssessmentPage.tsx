@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import {
-  CheckCircle2,
-  XCircle,
   AlertTriangle,
   Sparkles,
-  HelpCircle,
   ShieldCheck,
   Code2,
   ArrowRight,
   RotateCw,
-  Clock,
-  Layers,
   Timer,
   Zap,
 } from 'lucide-react';
@@ -42,23 +37,11 @@ export const AssessmentPage: React.FC = () => {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [practicalText, setPracticalText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [result, setResult] = useState<AssessmentResultData | null>(null);
   const [secondsRemaining, setSecondsRemaining] = useState(600); // 10 minutes timer
 
-  useEffect(() => {
-    loadQuiz(selectedSkill);
-  }, [selectedSkill]);
-
-  useEffect(() => {
-    if (result) return;
-    const timer = setInterval(() => {
-      setSecondsRemaining((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [result]);
-
-  const loadQuiz = async (skillId: string) => {
+  const loadQuiz = useCallback(async (skillId: string) => {
     setIsLoading(true);
     setResult(null);
     setAnswers({});
@@ -72,7 +55,19 @@ export const AssessmentPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadQuiz(selectedSkill);
+  }, [loadQuiz, selectedSkill]);
+
+  useEffect(() => {
+    if (result) return;
+    const timer = setInterval(() => {
+      setSecondsRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [result]);
 
   const handleSelectOption = (questionId: number, optionIndex: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: optionIndex }));

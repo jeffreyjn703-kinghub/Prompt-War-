@@ -343,12 +343,13 @@ export const LoginPage: React.FC = () => {
             {tab === 'signup' && (
               <>
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor="login-fullname" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Full Name
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
+                      id="login-fullname"
                       type="text"
                       required
                       value={fullName}
@@ -360,10 +361,11 @@ export const LoginPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor="login-target-role" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Target Role
                   </label>
                   <select
+                    id="login-target-role"
                     value={targetRole}
                     onChange={(e) => setTargetRole(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -380,12 +382,13 @@ export const LoginPage: React.FC = () => {
             )}
 
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="login-email" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Email Address
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
+                  id="login-email"
                   type="email"
                   required
                   value={email}
@@ -402,12 +405,13 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="login-password" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Password
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
@@ -419,6 +423,7 @@ export const LoginPage: React.FC = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

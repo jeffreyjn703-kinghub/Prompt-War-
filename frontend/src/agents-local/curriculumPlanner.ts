@@ -43,7 +43,6 @@ export class CurriculumPlannerLocal {
 
     const foundationalSkills = new Set(['html', 'css', 'javascript', 'git', 'python', 'sql', 'linux']);
     const coreSkills = new Set(['react', 'nodejs', 'express', 'fastapi', 'vue', 'tailwind', 'typescript', 'data-analysis-pandas']);
-    const advancedSkills = new Set(['docker', 'kubernetes', 'aws', 'postgresql', 'redis', 'auth-jwt', 'microservices', 'mlops', 'deep-learning-pytorch']);
 
     const p1Gaps: any[] = [];
     const p2Gaps: any[] = [];

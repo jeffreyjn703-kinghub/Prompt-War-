@@ -5,13 +5,8 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
-  ArrowRight,
   Sparkles,
-  ChevronRight,
-  TrendingUp,
   X,
-  Layers,
-  ArrowLeftRight,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -26,7 +21,7 @@ export const CareerMatchPage: React.FC = () => {
   const [roles, setRoles] = useState<RoleTaxonomyItem[]>([]);
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [matchData, setMatchData] = useState<CareerMatchData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [isSwitching, setIsSwitching] = useState(false);
   const [diffModal, setDiffModal] = useState<{
     oldRole: string;

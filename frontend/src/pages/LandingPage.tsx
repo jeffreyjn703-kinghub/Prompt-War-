@@ -3,19 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   ArrowRight,
-  Bot,
   BrainCircuit,
   Compass,
-  CheckCircle2,
   ShieldCheck,
-  TrendingUp,
   Cpu,
   Layers,
   Zap,
   BookOpen,
   Search,
   Activity,
-  Award,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { VyntrixaLogo } from '../components/VyntrixaLogo';

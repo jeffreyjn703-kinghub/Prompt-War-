@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Sparkles,
   Compass,
   Radar,
   Briefcase,
@@ -12,8 +11,7 @@ import {
   Users,
   Sun,
   Moon,
-  Bot,
-  UserCheck
+  Bot
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';

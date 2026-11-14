@@ -7,15 +7,9 @@ import {
   Check,
   Plus,
   Trash2,
-  Briefcase,
-  Clock,
   GraduationCap,
-  Sliders,
   Search,
-  Award,
-  FolderGit2,
   User,
-  Zap,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -41,17 +35,12 @@ export const OnboardingWizard: React.FC = () => {
     { skill_name: 'HTML', proficiency: 2, confidence: 'self-rated' },
   ]);
 
-  const [certs, setCerts] = useState<CertificationItem[]>([
+  const [certs] = useState<CertificationItem[]>([
     { name: 'Python for Everybody (Coursera)', issuer: 'University of Michigan', issue_date: '2024' },
   ]);
-  const [projects, setProjects] = useState<ProjectItem[]>([
+  const [projects] = useState<ProjectItem[]>([
     { title: 'Library Management API with Python & SQLite', description: 'FastAPI CRUD endpoints with relational schema', skills_used: 'Python, SQL, SQLite' },
   ]);
-
-  const [newCertName, setNewCertName] = useState('');
-  const [newCertIssuer, setNewCertIssuer] = useState('');
-  const [newProjTitle, setNewProjTitle] = useState('');
-  const [newProjDesc, setNewProjDesc] = useState('');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [freeTextSkill, setFreeTextSkill] = useState('');
@@ -94,30 +83,6 @@ export const OnboardingWizard: React.FC = () => {
     setSelectedSkills(
       selectedSkills.map((s) => (s.skill_name === name ? { ...s, proficiency: level } : s))
     );
-  };
-
-  const handleAddCert = () => {
-    if (newCertName.trim()) {
-      setCerts([...certs, { name: newCertName.trim(), issuer: newCertIssuer.trim() || 'Online', issue_date: '2025' }]);
-      setNewCertName('');
-      setNewCertIssuer('');
-    }
-  };
-
-  const handleRemoveCert = (idx: number) => {
-    setCerts(certs.filter((_, i) => i !== idx));
-  };
-
-  const handleAddProj = () => {
-    if (newProjTitle.trim()) {
-      setProjects([...projects, { title: newProjTitle.trim(), description: newProjDesc.trim() || 'Software implementation', skills_used: 'Full Stack' }]);
-      setNewProjTitle('');
-      setNewProjDesc('');
-    }
-  };
-
-  const handleRemoveProj = (idx: number) => {
-    setProjects(projects.filter((_, i) => i !== idx));
   };
 
   const handleFinalSubmit = async () => {

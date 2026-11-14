@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Activity,
   Bot,
   BrainCircuit,
   Cpu,
-  Zap,
   Clock,
   Layers,
-  ArrowRight,
   ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
   RefreshCw,
   Play,
   Pause,
-  Terminal,
   ChevronDown,
   ChevronUp,
   Compass,
@@ -32,11 +27,7 @@ export const AgentTracePage: React.FC = () => {
   const [isReplaying, setIsReplaying] = useState(false);
   const [replayStep, setReplayStep] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchTraces();
-  }, []);
-
-  const fetchTraces = async () => {
+  const fetchTraces = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await api.getAgentTraces();
@@ -46,7 +37,11 @@ export const AgentTracePage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTraces();
+  }, [fetchTraces]);
 
   const traces = traceData?.traces || [];
   const stats = traceData?.stats;

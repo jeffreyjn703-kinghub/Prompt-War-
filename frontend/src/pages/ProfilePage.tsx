@@ -13,20 +13,17 @@ import {
   Save,
   Sparkles,
   ShieldCheck,
-  AlertCircle,
   LogOut,
-  ExternalLink,
   Flame,
   Search,
   Check,
   ChevronRight,
-  TrendingUp,
   Bot,
   Zap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
-import { UserSkillItem, CertificationItem, ProjectItem, SkillTaxonomyItem, RoleTaxonomyItem } from '../types';
+import { UserSkillItem, CertificationItem, ProjectItem, SkillTaxonomyItem } from '../types';
 
 export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -62,7 +59,6 @@ export const ProfilePage: React.FC = () => {
 
   // Taxonomy & Custom Adders
   const [availableSkills, setAvailableSkills] = useState<SkillTaxonomyItem[]>([]);
-  const [availableRoles, setAvailableRoles] = useState<RoleTaxonomyItem[]>([]);
   const [skillSearchQuery, setSkillSearchQuery] = useState('');
   const [customSkillName, setCustomSkillName] = useState('');
   const [customSkillProficiency, setCustomSkillProficiency] = useState(3);
@@ -105,9 +101,8 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     const loadTaxonomies = async () => {
       try {
-        const [skData, roData] = await Promise.all([api.getSkills(), api.getRoles()]);
+        const skData = await api.getSkills();
         setAvailableSkills(skData);
-        setAvailableRoles(roData);
       } catch (_) {}
     };
     loadTaxonomies();
@@ -236,7 +231,7 @@ export const ProfilePage: React.FC = () => {
       // Then trigger agent pipeline
       const res = await analyzeProfile();
       setAgentAnalysisMessage(res.message);
-    } catch (err: any) {
+    } catch (_err: any) {
       setAgentAnalysisMessage('Profile Analyst & Career Matcher re-calculated your skill readiness.');
     } finally {
       setIsAnalyzing(false);

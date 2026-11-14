@@ -52,12 +52,56 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS configuration
+import time
+from collections import defaultdict
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+# 3. Security Headers Middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+# 4. In-Memory Rate Limiting for Sensitive Auth Endpoints
+_auth_rate_limits = defaultdict(list)
+_AUTH_MAX_ATTEMPTS = 60
+_AUTH_WINDOW_SECONDS = 60
+
+@app.middleware("http")
+async def rate_limit_auth_endpoints(request: Request, call_next):
+    if request.method == "POST" and request.url.path in ["/api/auth/login", "/api/auth/register"]:
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        now = time.time()
+        timestamps = _auth_rate_limits[client_ip]
+        _auth_rate_limits[client_ip] = [ts for ts in timestamps if now - ts < _AUTH_WINDOW_SECONDS]
+        if len(_auth_rate_limits[client_ip]) >= _AUTH_MAX_ATTEMPTS:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Too many authentication requests. Please try again in 60 seconds."}
+            )
+        _auth_rate_limits[client_ip].append(now)
+    return await call_next(request)
+
+# CORS configuration - OWASP compliant origin regex & explicit trusted origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for dev/docker ease
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        "https://prompt-war-umber.vercel.app"
+    ],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.pinggy-free\.link|.*\.lhr\.life)(:\d+)?$",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
 )
 

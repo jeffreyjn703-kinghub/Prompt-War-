@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   User,
-  GraduationCap,
-  Briefcase,
-  Clock,
   Award,
   FolderGit2,
-  Bell,
   Sun,
   Moon,
   Plus,
@@ -43,7 +39,6 @@ export const SettingsPage: React.FC = () => {
 
   const [notifReplan, setNotifReplan] = useState(true);
   const [notifMentor, setNotifMentor] = useState(true);
-  const [notifWeekly, setNotifWeekly] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);

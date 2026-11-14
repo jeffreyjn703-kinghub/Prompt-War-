@@ -148,7 +148,6 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
 // Helper for inline bold, italic, and inline code formatting
 function formatInline(text: string): React.ReactNode {
   const parts: React.ReactNode[] = [];
-  let remaining = text;
   let keyIdx = 0;
 
   // Split by inline code `...`

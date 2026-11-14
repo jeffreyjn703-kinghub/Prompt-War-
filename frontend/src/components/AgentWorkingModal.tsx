@@ -9,7 +9,6 @@ import {
   Layers,
   BookOpen,
   Search,
-  Activity,
   Cpu,
 } from 'lucide-react';
 

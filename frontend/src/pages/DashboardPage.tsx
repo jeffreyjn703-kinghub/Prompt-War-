@@ -10,11 +10,8 @@ import {
   AlertCircle,
   ExternalLink,
   ChevronRight,
-  TrendingUp,
   ShieldCheck,
   Award,
-  Layers,
-  HelpCircle,
 } from 'lucide-react';
 import {
   Radar,
@@ -45,7 +42,7 @@ export const DashboardPage: React.FC = () => {
   const [analysis, setAnalysis] = useState<any>(null);
   const [progress, setProgress] = useState<any>(null);
   const [guidance, setGuidance] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [dismissBanner, setDismissBanner] = useState(false);
 
   useEffect(() => {

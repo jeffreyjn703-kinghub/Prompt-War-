@@ -45,7 +45,6 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [guidance, setGuidance] = useState<any>(null);
   const [showContext, setShowContext] = useState(false);
   const [showKeyConfig, setShowKeyConfig] = useState(false);
   const [keyInput, setKeyInput] = useState(getGeminiApiKey());
@@ -56,6 +55,7 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
     setHasKey(hasGeminiApiKey());
     setKeyInput(getGeminiApiKey());
   }, [isOpen]);
@@ -64,29 +64,28 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
     const fetchGuidance = async () => {
       try {
         const data = await api.getMentorGuidance();
-        setGuidance(data);
-        if (messages.length === 0) {
-          setMessages([
-            {
-              id: 'init-1',
-              sender: 'mentor',
-              text: data.message,
-              timestamp: 'Just now',
-              actionable: true,
-              resourceTitle: 'JavaScript ES6+ Promises & Closures Primer',
-              resourceUrl: 'https://javascript.info/',
-            },
-          ]);
-        }
+        setMessages((prev) => {
+          if (prev.length === 0) {
+            return [
+              {
+                id: 'init-1',
+                sender: 'mentor',
+                text: data.message,
+                timestamp: 'Just now',
+                actionable: true,
+                resourceTitle: 'JavaScript ES6+ Promises & Closures Primer',
+                resourceUrl: 'https://javascript.info/',
+              },
+            ];
+          }
+          return prev;
+        });
       } catch (err) {
         console.warn('Could not load mentor guidance', err);
       }
     };
-
-    if (isOpen) {
-      fetchGuidance();
-    }
-  }, [isOpen]);
+    fetchGuidance();
+  }, [profile?.user_id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -216,6 +215,7 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
               onClick={() => setShowKeyConfig(!showKeyConfig)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               title="Configure Google Gemini API Key"
+              aria-label="Configure Google Gemini API Key"
             >
               <Key className="w-4 h-4" />
             </button>
@@ -226,12 +226,15 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
               }}
               className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
               title="Expand to full screen"
+              aria-label="Expand mentor to full screen"
             >
               <Maximize2 className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Close mentor drawer"
+              aria-label="Close mentor drawer"
             >
               <X className="w-5 h-5" />
             </button>

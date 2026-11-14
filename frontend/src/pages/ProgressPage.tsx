@@ -5,11 +5,7 @@ import {
   Clock,
   CheckCircle2,
   ShieldCheck,
-  Activity,
-  Layers,
-  ChevronRight,
   Award,
-  Calendar,
   Sparkles,
   Zap,
 } from 'lucide-react';
@@ -29,7 +25,7 @@ export const ProgressPage: React.FC = () => {
   const { profile } = useAuth();
   const [progressData, setProgressData] = useState<any>(null);
   const [timeRange, setTimeRange] = useState<'7D' | '30D' | '3M' | 'All'>('30D');
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -58,7 +54,7 @@ export const ProgressPage: React.FC = () => {
     { phase_id: 3, title: 'Phase 3: Node.js & REST APIs', completed_items: 0, total_items: 4, progress_pct: 0, is_remedial: false },
     { phase_id: 4, title: 'Phase 4: Full Stack Capstone', completed_items: 0, total_items: 3, progress_pct: 0, is_remedial: false },
   ];
-  const skillBars = progressData?.skill_progress_bars || [
+  const _skillBars = progressData?.skill_progress_bars || [
     { skill_id: 'python', skill_name: 'Python', current_level: 4, target_level: 4, progress_pct: 100, is_verified: true },
     { skill_id: 'sql', skill_name: 'SQL', current_level: 3, target_level: 3, progress_pct: 100, is_verified: true },
     { skill_id: 'html-css', skill_name: 'HTML & CSS', current_level: 2, target_level: 4, progress_pct: 50, is_verified: false },
