@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SkillModalProvider } from './context/SkillModalContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { MobileNav } from './components/MobileNav';
@@ -41,7 +42,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (isMinimal) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
         <main className="flex-1">{children}</main>
       </div>
     );
@@ -77,34 +78,36 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <SkillModalProvider>
-            <BrowserRouter>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/onboard" element={<OnboardingWizard />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/analysis" element={<SkillAnalysisPage />} />
-                  <Route path="/match" element={<CareerMatchPage />} />
-                  <Route path="/roadmap" element={<RoadmapPage />} />
-                  <Route path="/assessments" element={<AssessmentPage />} />
-                  <Route path="/progress" element={<ProgressPage />} />
-                  <Route path="/mentor" element={<MentorPage />} />
-                  <Route path="/trace" element={<AgentTracePage />} />
-                  <Route path="/cohort" element={<OrgCohortPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  {/* Fallback */}
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-              </Layout>
-            </BrowserRouter>
-          </SkillModalProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <SkillModalProvider>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/onboard" element={<OnboardingWizard />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/analysis" element={<SkillAnalysisPage />} />
+                    <Route path="/match" element={<CareerMatchPage />} />
+                    <Route path="/roadmap" element={<RoadmapPage />} />
+                    <Route path="/assessments" element={<AssessmentPage />} />
+                    <Route path="/progress" element={<ProgressPage />} />
+                    <Route path="/mentor" element={<MentorPage />} />
+                    <Route path="/trace" element={<AgentTracePage />} />
+                    <Route path="/cohort" element={<OrgCohortPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </Layout>
+              </SkillModalProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
