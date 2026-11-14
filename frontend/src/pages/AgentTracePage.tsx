@@ -15,6 +15,11 @@ import {
   Play,
   Pause,
   Terminal,
+  ChevronDown,
+  ChevronUp,
+  Compass,
+  BookOpen,
+  Search,
 } from 'lucide-react';
 import { api } from '../api/client';
 import { AgentTraceData } from '../types';
@@ -23,8 +28,9 @@ export const AgentTracePage: React.FC = () => {
   const [traceData, setTraceData] = useState<AgentTraceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAgentNode, setSelectedAgentNode] = useState<string | null>(null);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [isReplaying, setIsReplaying] = useState(false);
-  const [activeStepIndex, setActiveStepIndex] = useState<number | null>(null);
+  const [replayStep, setReplayStep] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTraces();
@@ -44,39 +50,44 @@ export const AgentTracePage: React.FC = () => {
 
   const traces = traceData?.traces || [];
   const stats = traceData?.stats;
-  const nodes = traceData?.nodes || [
-    { id: '1', name: 'Orchestrator', role: 'Coordinates pipeline & routes events', type: 'coordinator' },
-    { id: '2', name: 'Profile Analyst', role: 'Normalizes skills into taxonomy graph', type: 'specialist' },
-    { id: '3', name: 'Career Matcher', role: 'Computes role readiness & gaps', type: 'specialist' },
-    { id: '4', name: 'Skill Gap Agent', role: 'Ranks missing & weak prerequisites', type: 'specialist' },
-    { id: '5', name: 'Curriculum Planner', role: 'Builds phased roadmap & delta', type: 'specialist' },
-    { id: '6', name: 'Resource Recommender', role: 'Curates courses, docs & practicals', type: 'specialist' },
-    { id: '7', name: 'Assessment Agent', role: 'Generates quizzes & grades submissions', type: 'evaluator' },
-    { id: '8', name: 'Progress Evaluator', role: 'Monitors velocity & stagnation signals', type: 'evaluator' },
-    { id: '9', name: 'Mentor Agent', role: 'Conversational guidance & re-plans', type: 'coordinator' },
+
+  // The 8 Satellite Agents surrounding the central Orchestrator
+  const satelliteAgents = [
+    { id: 'profile', name: 'Profile Analyst', role: 'Skill graph & normalization', icon: BrainCircuit, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/70 border-blue-200 dark:border-blue-800' },
+    { id: 'match', name: 'Career Matcher', role: 'Role gap & match %', icon: Compass, color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-950/70 border-violet-200 dark:border-violet-800' },
+    { id: 'gap', name: 'Skill Gap Agent', role: 'Prerequisite DAG sorting', icon: Layers, color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-950/70 border-rose-200 dark:border-rose-800' },
+    { id: 'planner', name: 'Curriculum Planner', role: 'Phased milestone timelines', icon: BookOpen, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-950/70 border-cyan-200 dark:border-cyan-800' },
+    { id: 'resource', name: 'Resource Recommender', role: 'Curates courses & tasks', icon: Search, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/70 border-amber-200 dark:border-amber-800' },
+    { id: 'assessment', name: 'Assessment Agent', role: 'Quizzes & scoring rubric', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500/20' },
+    { id: 'progress', name: 'Progress Evaluator', role: 'Velocity & friction checks', icon: Activity, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-950/70 border-purple-200 dark:border-purple-800' },
+    { id: 'mentor', name: 'Mentor Agent', role: 'SSE streaming & replan nudges', icon: Bot, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-200 dark:border-indigo-800' },
   ];
 
-  // Replay animation simulation
+  // Replay animation simulation sequence
   const handleReplay = () => {
     if (isReplaying) {
       setIsReplaying(false);
-      setActiveStepIndex(null);
+      setReplayStep(null);
       return;
     }
     setIsReplaying(true);
-    setActiveStepIndex(0);
+    setReplayStep(0); // 0 = Orchestrator
 
     let current = 0;
     const interval = setInterval(() => {
       current++;
-      if (current >= nodes.length) {
+      if (current > satelliteAgents.length) {
         clearInterval(interval);
         setIsReplaying(false);
-        setActiveStepIndex(null);
+        setReplayStep(null);
       } else {
-        setActiveStepIndex(current);
+        setReplayStep(current);
       }
-    }, 700);
+    }, 750);
+  };
+
+  const toggleRow = (id: number) => {
+    setExpandedRowId((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -85,18 +96,17 @@ export const AgentTracePage: React.FC = () => {
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-            Observability & Audit Trail
+            Multi-Agent State Machine
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-heading mt-1">
-            Agent Activity & Hand-Off Traces
+            Agent Activity & Execution Traces
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-            Real-time observability of multi-agent state machines, execution hand-offs, duration telemetry, and LLM vs Rule-Engine usage.
+            Centralized Orchestrator routing events to 8 specialized satellite agents with explicit hand-offs and deterministic rule-engine fallbacks.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Animated Replay Run Button */}
           <button
             onClick={handleReplay}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
@@ -108,12 +118,14 @@ export const AgentTracePage: React.FC = () => {
             {isReplaying ? (
               <>
                 <Pause className="w-3.5 h-3.5" />
-                <span>Replaying... ({nodes[activeStepIndex ?? 0]?.name})</span>
+                <span>
+                  Replaying Step {replayStep}/{satelliteAgents.length}...
+                </span>
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                <span>Replay Pipeline Run</span>
+                <span>Replay Run</span>
               </>
             )}
           </button>
@@ -131,18 +143,18 @@ export const AgentTracePage: React.FC = () => {
       {/* Metrics Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Total Agent Runs</span>
-          <span className="text-2xl font-extrabold text-slate-900 dark:text-white font-heading block mt-1">
+          <span className="text-[10px] uppercase font-bold text-slate-400">Total Pipeline Runs</span>
+          <span className="text-2xl font-bold text-slate-900 dark:text-white font-heading block mt-1">
             {stats?.total_runs || 28}
           </span>
-          <span className="text-[10px] text-slate-400">Recorded telemetry events</span>
+          <span className="text-[10px] text-slate-400">Deterministic hand-offs</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
           <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400">
-            Rule Fallback Runs
+            Rule-Engine Fallbacks
           </span>
-          <span className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 font-heading block mt-1">
+          <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 font-heading block mt-1">
             {stats?.fallback_runs || 28}
           </span>
           <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -154,7 +166,7 @@ export const AgentTracePage: React.FC = () => {
           <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">
             Gemini LLM Runs
           </span>
-          <span className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-heading block mt-1">
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-heading block mt-1">
             {stats?.llm_runs || 0}
           </span>
           <span className="text-[10px] text-slate-400">gemini-2.0-flash</span>
@@ -162,85 +174,22 @@ export const AgentTracePage: React.FC = () => {
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
           <span className="text-[10px] uppercase font-bold text-slate-400">Average Duration</span>
-          <span className="text-2xl font-extrabold text-slate-900 dark:text-white font-heading block mt-1 font-mono">
+          <span className="text-2xl font-bold text-slate-900 dark:text-white font-heading block mt-1 font-mono">
             {stats?.avg_latency_ms || 18} ms
           </span>
-          <span className="text-[10px] text-slate-400">Blazing local execution</span>
+          <span className="text-[10px] text-slate-400">In-memory execution speed</span>
         </div>
       </div>
 
-      {/* Visual Graph of Agent Hand-Offs */}
+      {/* Visual Hub-and-Spoke Agent Graph (Orchestrator at Center) */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-            Collaborative Multi-Agent Hand-Off Topology
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Explicit hand-off pipeline across specialized agents communicating via shared <code>LearnerContext</code> state.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
-          {nodes.map((n, i) => {
-            const isSelected = selectedAgentNode === n.name;
-            const isReplayActive = activeStepIndex === i;
-            return (
-              <button
-                key={n.id}
-                onClick={() => setSelectedAgentNode(isSelected ? null : n.name)}
-                className={`p-3.5 rounded-xl border text-left transition-all relative ${
-                  isReplayActive
-                    ? 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-400 shadow-lg scale-103'
-                    : isSelected
-                    ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs'
-                    : 'bg-slate-50 dark:bg-slate-850 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 text-slate-800 dark:text-slate-200'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span
-                    className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-semibold ${
-                      isReplayActive
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-200 dark:bg-slate-750 text-slate-500'
-                    }`}
-                  >
-                    0{i + 1}
-                  </span>
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      isReplayActive
-                        ? 'bg-white animate-ping'
-                        : n.type === 'coordinator'
-                        ? 'bg-amber-400'
-                        : n.type === 'evaluator'
-                        ? 'bg-emerald-400'
-                        : 'bg-indigo-500'
-                    }`}
-                  />
-                </div>
-                <h4 className="text-xs font-bold leading-tight">{n.name}</h4>
-                <p
-                  className={`text-[10px] mt-1 leading-snug line-clamp-2 ${
-                    isReplayActive ? 'text-indigo-100' : 'text-slate-400'
-                  }`}
-                >
-                  {n.role}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Live Timeline of Execution Traces */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Execution Activity Timeline
+              Visual Agent Architecture Graph
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {selectedAgentNode ? `Filtered by ${selectedAgentNode}` : 'Chronological audit of agent runs & hand-offs'}
+              Orchestrator at the center with directional hand-offs to the 8 specialized agents.
             </p>
           </div>
           {selectedAgentNode && (
@@ -248,27 +197,119 @@ export const AgentTracePage: React.FC = () => {
               onClick={() => setSelectedAgentNode(null)}
               className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
             >
-              Clear filter
+              Reset filter
             </button>
           )}
         </div>
 
-        <div className="space-y-3">
+        {/* Central Orchestrator & Surrounding Ring of 8 Satellite Agents */}
+        <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 flex flex-col items-center justify-center relative overflow-hidden">
+          {/* Central Orchestrator Node */}
+          <div className="mb-6 relative z-10 flex flex-col items-center">
+            <button
+              onClick={() => setSelectedAgentNode(selectedAgentNode === 'Orchestrator' ? null : 'Orchestrator')}
+              className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center shadow-md ${
+                replayStep === 0
+                  ? 'bg-indigo-600 text-white border-indigo-600 ring-4 ring-indigo-400 shadow-indigo-600/40 scale-105'
+                  : selectedAgentNode === 'Orchestrator'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-500 text-indigo-600 dark:text-indigo-300'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-750 text-slate-900 dark:text-white hover:border-indigo-400'
+              }`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white mb-2 shadow-xs">
+                <Cpu className="w-5 h-5 animate-pulse" />
+              </div>
+              <span className="text-xs font-bold font-heading">Orchestrator Agent</span>
+              <span className="text-[10px] text-slate-400 mt-0.5">Central Pipeline Coordinator</span>
+            </button>
+          </div>
+
+          {/* Satellite Agents Grid */}
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 relative z-10">
+            {satelliteAgents.map((ag, idx) => {
+              const Icon = ag.icon;
+              const isSelected = selectedAgentNode === ag.name;
+              const isReplayingThis = replayStep === idx + 1;
+
+              return (
+                <button
+                  key={ag.id}
+                  onClick={() => setSelectedAgentNode(isSelected ? null : ag.name)}
+                  className={`p-3.5 rounded-xl border text-left transition-all ${
+                    isReplayingThis
+                      ? 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-400 shadow-md scale-102'
+                      : isSelected
+                      ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                      : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 text-slate-800 dark:text-slate-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`p-1.5 rounded-lg border shrink-0 ${ag.bg} ${ag.color}`}>
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <span
+                      className={`text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded ${
+                        isReplayingThis ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                      }`}
+                    >
+                      Step 0{idx + 1}
+                    </span>
+                  </div>
+                  <h4 className="text-xs font-bold leading-tight">{ag.name}</h4>
+                  <p
+                    className={`text-[10px] mt-1 line-clamp-1 ${
+                      isReplayingThis ? 'text-indigo-100' : 'text-slate-400'
+                    }`}
+                  >
+                    {ag.role}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Run Timeline List with Expandable Rows (Monospace Log Style) */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              Agent Execution Audit Logs
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {selectedAgentNode
+                ? `Filtered by ${selectedAgentNode}`
+                : 'Expand any log row to inspect exact structured inputs & outputs.'}
+            </p>
+          </div>
+          <span className="text-xs font-mono text-slate-400">
+            {traces.length} total events
+          </span>
+        </div>
+
+        <div className="space-y-2.5">
           {traces
-            .filter((t) => (selectedAgentNode ? t.agent_name === selectedAgentNode : true))
+            .filter((t) => (selectedAgentNode ? t.agent_name.toLowerCase().includes(selectedAgentNode.toLowerCase()) : true))
             .map((trace) => {
+              const isExpanded = expandedRowId === trace.id;
               const isLLM = trace.used_llm;
+
               return (
                 <div
                   key={trace.id}
-                  className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all space-y-2"
+                  className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 overflow-hidden transition-all"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-xs text-slate-900 dark:text-white">
-                        {trace.agent_name}
+                  {/* Row Header */}
+                  <div
+                    onClick={() => toggleRow(trace.id)}
+                    className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 cursor-pointer hover:bg-slate-100/70 dark:hover:bg-slate-900/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                        [{trace.agent_name}]
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-750 text-[10px] font-mono font-semibold uppercase text-slate-600 dark:text-slate-300">
+                      <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono uppercase text-slate-600 dark:text-slate-400 font-semibold">
                         {trace.event_name}
                       </span>
                       {isLLM ? (
@@ -276,40 +317,45 @@ export const AgentTracePage: React.FC = () => {
                           <Bot className="w-3 h-3" /> Gemini LLM
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 text-[10px] font-semibold flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 text-[10px] font-semibold flex items-center gap-1 font-mono">
                           <Cpu className="w-3 h-3" /> Rule-Engine Fallback
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-slate-400">
-                      <span className="flex items-center gap-1 font-mono">
-                        <Clock className="w-3 h-3" /> {trace.duration_ms}ms
+                    <div className="flex items-center gap-3 text-xs text-slate-400 shrink-0 font-mono">
+                      <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300">
+                        <Clock className="w-3 h-3 text-slate-400" /> {trace.duration_ms}ms
                       </span>
-                      <span>{trace.created_at}</span>
+                      <span className="text-[11px]">{trace.created_at}</span>
+                      <button className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
                     </div>
                   </div>
 
-                  {/* Summary details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-1">
-                    <div className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
-                        Input Summary
-                      </span>
-                      <p className="text-slate-700 dark:text-slate-300 line-clamp-2 font-mono text-[11px]">
-                        {trace.input_summary}
-                      </p>
-                    </div>
+                  {/* Expandable Monospace Content */}
+                  {isExpanded && (
+                    <div className="p-4 border-t border-slate-200/60 dark:border-slate-800/80 bg-white dark:bg-slate-900/80 space-y-3 font-mono text-xs">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                          Input Payload Summary
+                        </span>
+                        <pre className="p-3 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed text-[11px]">
+                          {trace.input_summary}
+                        </pre>
+                      </div>
 
-                    <div className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800">
-                      <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 block mb-0.5">
-                        Output Summary
-                      </span>
-                      <p className="text-slate-700 dark:text-slate-300 line-clamp-2 font-mono text-[11px]">
-                        {trace.output_summary}
-                      </p>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 block mb-1">
+                          Output Payload Summary
+                        </span>
+                        <pre className="p-3 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed text-[11px]">
+                          {trace.output_summary}
+                        </pre>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
