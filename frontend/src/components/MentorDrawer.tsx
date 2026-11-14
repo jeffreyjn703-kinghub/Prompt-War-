@@ -9,14 +9,19 @@ import {
   ExternalLink,
   PlusCircle,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  User,
   BrainCircuit,
-  ChevronRight,
+  Key,
+  Check,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
+import {
+  streamMentorChat,
+  getGeminiApiKey,
+  setGeminiApiKey,
+  hasGeminiApiKey,
+  MentorContext,
+} from '../services/geminiMentor';
 
 interface MentorDrawerProps {
   isOpen: boolean;
@@ -41,9 +46,18 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
   const [isStreaming, setIsStreaming] = useState(false);
   const [guidance, setGuidance] = useState<any>(null);
   const [showContext, setShowContext] = useState(false);
+  const [showKeyConfig, setShowKeyConfig] = useState(false);
+  const [keyInput, setKeyInput] = useState(getGeminiApiKey());
+  const [keySavedMessage, setKeySavedMessage] = useState(false);
+  const [hasKey, setHasKey] = useState(hasGeminiApiKey());
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setHasKey(hasGeminiApiKey());
+    setKeyInput(getGeminiApiKey());
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchGuidance = async () => {
@@ -77,6 +91,22 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isStreaming]);
 
+  const handleSaveKey = () => {
+    setGeminiApiKey(keyInput);
+    setHasKey(hasGeminiApiKey());
+    setKeySavedMessage(true);
+    setTimeout(() => {
+      setKeySavedMessage(false);
+      setShowKeyConfig(false);
+    }, 1500);
+  };
+
+  const handleClearKey = () => {
+    setGeminiApiKey('');
+    setKeyInput('');
+    setHasKey(false);
+  };
+
   const handleSend = async (textToSend?: string) => {
     const query = (textToSend || input).trim();
     if (!query || isStreaming) return;
@@ -103,50 +133,26 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
     setIsStreaming(true);
 
     try {
-      const token = localStorage.getItem('skillpath_token') || '';
-      const response = await fetch(
-        `/api/mentor/chat?message=${encodeURIComponent(query)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const mentorCtx: MentorContext = {
+        fullName: profile?.full_name,
+        targetRole: profile?.target_role,
+        readinessPct: profile?.readiness_pct,
+        streakDays: profile?.streak_days,
+        weeklyHours: profile?.weekly_hours,
+        activePhaseTitle: 'Phase 1: Remedial JavaScript & Engine Mechanics',
+        weakSkills: ['JavaScript', 'React', 'Node.js & APIs'],
+        lastScore: { skill: 'JavaScript', score: 48 },
+      };
 
-      if (!response.body) {
-        throw new Error('ReadableStream not supported');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulated = '';
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6).trim();
-            if (dataStr === '[DONE]') break;
-            try {
-              const parsed = JSON.parse(dataStr);
-              if (parsed.content) {
-                accumulated += parsed.content;
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === mentorMsgId ? { ...msg, text: accumulated } : msg
-                  )
-                );
-              }
-            } catch (_) {}
-          }
-        }
-      }
+      await streamMentorChat(query, mentorCtx, (accumulatedText) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === mentorMsgId ? { ...msg, text: accumulatedText } : msg
+          )
+        );
+      });
     } catch (err) {
+      console.warn('Chat stream error, providing fallback:', err);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === mentorMsgId
@@ -182,9 +188,21 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-sm text-slate-900 dark:text-white">AI Career Mentor</h3>
-                <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  Active
-                </span>
+                {hasKey ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <Sparkles className="w-2.5 h-2.5" />
+                    Gemini 2.0 Flash
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setShowKeyConfig(!showKeyConfig)}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition-colors"
+                    title="Click to configure Gemini API Key"
+                  >
+                    <Key className="w-2.5 h-2.5" />
+                    Set Gemini Key
+                  </button>
+                )}
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Target: {profile?.target_role || 'Full Stack Developer'}
@@ -193,6 +211,13 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
           </div>
 
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowKeyConfig(!showKeyConfig)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Configure Google Gemini API Key"
+            >
+              <Key className="w-4 h-4" />
+            </button>
             <button
               onClick={() => {
                 onClose();
@@ -211,6 +236,52 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
             </button>
           </div>
         </div>
+
+        {/* Gemini API Key Configuration Dropdown */}
+        {showKeyConfig && (
+          <div className="p-4 bg-indigo-50/70 dark:bg-indigo-950/50 border-b border-indigo-100 dark:border-indigo-900/60 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                Google Gemini API Configuration
+              </span>
+              <button
+                onClick={() => setShowKeyConfig(false)}
+                className="text-slate-400 hover:text-slate-600 text-xs"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-2 leading-relaxed">
+              Enter your Gemini API Key to enable live Gemini 2.0 Flash responses. If omitted, the mentor runs on our verified deterministic agent engine.
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="password"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                placeholder="AIzaSy..."
+                className="flex-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+              />
+              <button
+                onClick={handleSaveKey}
+                className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors shrink-0 flex items-center gap-1"
+              >
+                {keySavedMessage ? <Check className="w-3.5 h-3.5" /> : null}
+                <span>{keySavedMessage ? 'Saved!' : 'Save'}</span>
+              </button>
+              {hasKey && (
+                <button
+                  onClick={handleClearKey}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-xs font-medium transition-colors shrink-0"
+                  title="Remove saved key"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Mentor Context Accordion (Goal, Weak skills, last score) */}
         <div className="px-4 py-2 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800">
@@ -336,7 +407,7 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
           {isStreaming && (
             <div className="flex items-center gap-2 text-xs text-slate-400 pl-10">
               <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-              <span>Mentor is analyzing context and formulating advice...</span>
+              <span>{hasKey ? 'Gemini 2.0 Flash is formulating advice...' : 'AI Mentor is analyzing context...'}</span>
             </div>
           )}
 
@@ -363,6 +434,12 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
               className="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0 shadow-2xs"
             >
               What should I do next?
+            </button>
+            <button
+              onClick={() => handleSend('How do I reach 80% readiness?')}
+              className="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0 shadow-2xs"
+            >
+              How to reach 80%?
             </button>
           </div>
         </div>

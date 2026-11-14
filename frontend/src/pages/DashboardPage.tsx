@@ -401,13 +401,14 @@ export const DashboardPage: React.FC = () => {
               {quickPrompts.map((prompt, idx) => (
                 <button
                   key={idx}
-                  onClick={() => navigate('/mentor')}
+                  onClick={() => navigate('/mentor', { state: { initialQuery: prompt } })}
                   className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-400 text-[11px] text-slate-600 dark:text-slate-300 font-medium transition-colors"
                 >
                   {prompt}
                 </button>
               ))}
             </div>
+
           </div>
         </div>
       </div>

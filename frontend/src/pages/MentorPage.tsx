@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Bot,
   Send,
@@ -7,14 +8,19 @@ import {
   PlusCircle,
   CheckCircle2,
   BrainCircuit,
-  Clock,
-  ShieldCheck,
-  AlertTriangle,
-  RotateCw,
-  Zap,
+  Key,
+  Check,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
+import {
+  streamMentorChat,
+  getGeminiApiKey,
+  setGeminiApiKey,
+  hasGeminiApiKey,
+  MentorContext,
+} from '../services/geminiMentor';
 
 interface ChatMessage {
   id: string;
@@ -26,6 +32,7 @@ interface ChatMessage {
 }
 
 export const MentorPage: React.FC = () => {
+  const location = useLocation();
   const { profile } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -33,7 +40,19 @@ export const MentorPage: React.FC = () => {
   const [guidance, setGuidance] = useState<any>(null);
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 
+  // Gemini Key Management
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [keyInput, setKeyInput] = useState(getGeminiApiKey());
+  const [hasKey, setHasKey] = useState(hasGeminiApiKey());
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+
+  useEffect(() => {
+    setHasKey(hasGeminiApiKey());
+    setKeyInput(getGeminiApiKey());
+  }, []);
 
   useEffect(() => {
     const fetchGuidance = async () => {
@@ -63,6 +82,30 @@ export const MentorPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isStreaming]);
 
+  useEffect(() => {
+    const st = location.state as { initialQuery?: string } | null;
+    if (st?.initialQuery) {
+      handleSend(st.initialQuery);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  const handleSaveKey = () => {
+    setGeminiApiKey(keyInput);
+    setHasKey(hasGeminiApiKey());
+    setSavedSuccess(true);
+    setTimeout(() => {
+      setSavedSuccess(false);
+      setShowKeyModal(false);
+    }, 1500);
+  };
+
+  const handleClearKey = () => {
+    setGeminiApiKey('');
+    setKeyInput('');
+    setHasKey(false);
+  };
+
   const handleSend = async (textToSend?: string) => {
     const query = (textToSend || input).trim();
     if (!query || isStreaming) return;
@@ -89,48 +132,26 @@ export const MentorPage: React.FC = () => {
     setIsStreaming(true);
 
     try {
-      const token = localStorage.getItem('skillpath_token') || '';
-      const response = await fetch(
-        `/api/mentor/chat?message=${encodeURIComponent(query)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const mentorCtx: MentorContext = {
+        fullName: profile?.full_name,
+        targetRole: profile?.target_role,
+        readinessPct: profile?.readiness_pct,
+        streakDays: profile?.streak_days,
+        weeklyHours: profile?.weekly_hours,
+        activePhaseTitle: 'Phase 1: Remedial JavaScript & Engine Mechanics',
+        weakSkills: ['JavaScript', 'React', 'Node.js & APIs'],
+        lastScore: { skill: 'JavaScript', score: 48 },
+      };
 
-      if (!response.body) throw new Error('Streaming failed');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulated = '';
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6).trim();
-            if (dataStr === '[DONE]') break;
-            try {
-              const parsed = JSON.parse(dataStr);
-              if (parsed.content) {
-                accumulated += parsed.content;
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === mentorMsgId ? { ...msg, text: accumulated } : msg
-                  )
-                );
-              }
-            } catch (_) {}
-          }
-        }
-      }
+      await streamMentorChat(query, mentorCtx, (accumulatedText) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === mentorMsgId ? { ...msg, text: accumulatedText } : msg
+          )
+        );
+      });
     } catch (err) {
+      console.warn('Mentor streaming error:', err);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === mentorMsgId
@@ -164,17 +185,90 @@ export const MentorPage: React.FC = () => {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white">AI Career Mentor (Full View)</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">AI Career Mentor (Full View)</h2>
+                  {hasKey ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      <Sparkles className="w-2.5 h-2.5" />
+                      Gemini 2.0 Flash
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                      AI Mentor Active
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Continuous guidance • Contextually attuned to your roadmap and scores
                 </p>
               </div>
             </div>
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Online
-            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowKeyModal(!showKeyModal)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                  hasKey
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                    : 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100'
+                }`}
+                title="Configure Google Gemini API Key"
+              >
+                <Key className="w-3.5 h-3.5" />
+                <span>{hasKey ? 'Gemini Connected' : 'Connect Gemini Key'}</span>
+              </button>
+
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Online
+              </span>
+            </div>
           </div>
+
+          {/* Gemini Key Configuration Modal Bar */}
+          {showKeyModal && (
+            <div className="p-4 px-6 bg-indigo-50/80 dark:bg-indigo-950/60 border-b border-indigo-100 dark:border-indigo-900/60 animate-in fade-in duration-150">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-indigo-950 dark:text-indigo-200 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                  Google Gemini 2.0 Flash API Key Configuration
+                </span>
+                <button
+                  onClick={() => setShowKeyModal(false)}
+                  className="text-slate-400 hover:text-slate-600 text-xs font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                Connect your Gemini API Key for unbounded, live LLM reasoning. Zero setup required: if left blank, the platform runs on our full deterministic multi-agent rule engine!
+              </p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="password"
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="Paste your Gemini API key (AIzaSy...)"
+                  className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                />
+                <button
+                  onClick={handleSaveKey}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition-colors shrink-0 flex items-center gap-1.5"
+                >
+                  {savedSuccess ? <Check className="w-3.5 h-3.5" /> : null}
+                  <span>{savedSuccess ? 'Saved Successfully!' : 'Save Key'}</span>
+                </button>
+                {hasKey && (
+                  <button
+                    onClick={handleClearKey}
+                    className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors shrink-0"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Message History */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -262,7 +356,7 @@ export const MentorPage: React.FC = () => {
             {isStreaming && (
               <div className="flex items-center gap-2 text-xs text-slate-400 pl-11">
                 <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                <span>Formulating personalized guidance...</span>
+                <span>{hasKey ? 'Gemini 2.0 Flash is formulating advice...' : 'AI Mentor is analyzing context...'}</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -390,11 +484,12 @@ export const MentorPage: React.FC = () => {
 
           {/* Quick Tip Card */}
           <div className="p-5 rounded-3xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 text-xs">
-            <span className="font-bold text-indigo-700 dark:text-indigo-300 block mb-1">
-              💡 Mentor Pro-tip
+            <span className="font-bold text-indigo-700 dark:text-indigo-300 block mb-1 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Gemini 2.0 Flash Ready</span>
             </span>
             <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-              You can trigger a full curriculum re-plan at any time by changing your target role or retaking any skill quiz in the Assessments tab.
+              Connect your Gemini API Key in the top right at any time to unlock unconstrained generative intelligence, or continue with our zero-key rule-based agent pipeline.
             </p>
           </div>
         </div>
