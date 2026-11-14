@@ -11,6 +11,8 @@ import {
   Activity,
   Users,
   Settings,
+  User,
+  LogOut,
   ChevronLeft,
   ChevronRight,
   Sparkles,
@@ -24,11 +26,12 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
-  const { profile, loginDemo } = useAuth();
+  const { profile, loginDemo, logout } = useAuth();
   const location = useLocation();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Profile', path: '/profile', icon: User },
     { name: 'Skill Analysis', path: '/analysis', icon: Radar },
     { name: 'Career Match', path: '/match', icon: Briefcase },
     { name: 'Roadmap', path: '/roadmap', icon: Map },
@@ -149,17 +152,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse })
       </nav>
 
       {/* User Profile Block at bottom */}
-      <div className="p-3 border-t border-slate-100 dark:border-slate-800">
+      <div className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1">
         <NavLink
-          to="/settings"
-          className="p-2 rounded-xl flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors group"
+          to="/profile"
+          className="p-1.5 rounded-xl flex items-center gap-2.5 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors group flex-1 min-w-0"
+          title="View & Edit Profile"
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
             {learnerName.charAt(0)}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-semibold text-slate-900 dark:text-white block truncate">
+              <span className="text-xs font-semibold text-slate-900 dark:text-white block truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                 {learnerName}
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
@@ -168,6 +172,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse })
             </div>
           )}
         </NavLink>
+
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={logout}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+            title="Log Out"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </aside>
   );

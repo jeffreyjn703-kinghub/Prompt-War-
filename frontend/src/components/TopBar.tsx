@@ -14,6 +14,9 @@ import {
   X,
   AlertTriangle,
   ArrowRight,
+  User,
+  LogOut,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -26,17 +29,19 @@ interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
   const navigate = useNavigate();
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const [roles, setRoles] = useState<RoleTaxonomyItem[]>([]);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -56,6 +61,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
       }
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotificationOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -255,6 +263,92 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMentor }) => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
             </span>
           </button>
+
+          {/* User Profile Avatar & Dropdown Menu */}
+          <div className="relative" ref={profileRef}>
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+              title="My Account & Profile"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                {(profile?.full_name || 'Arjun Kumar').charAt(0)}
+              </div>
+            </button>
+
+            {profileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                {/* Header with user info */}
+                <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                    {profile?.full_name || 'Arjun Kumar'}
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                    {profile?.email || 'arjun.kumar@skillpath.ai'}
+                  </span>
+                  <div className="mt-2 flex items-center justify-between text-[10px] font-semibold">
+                    <span className="px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 truncate">
+                      {profile?.target_role || 'Full Stack Developer'}
+                    </span>
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      {Math.round(profile?.readiness_pct ?? 32)}% Ready
+                    </span>
+                  </div>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-1 text-xs">
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      navigate('/profile');
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-slate-400" />
+                    <span>My Profile & Skills</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      navigate('/roadmap');
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 transition-colors"
+                  >
+                    <Briefcase className="w-4 h-4 text-slate-400" />
+                    <span>Learning Roadmap</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      navigate('/settings');
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 transition-colors"
+                  >
+                    <Settings className="w-4 h-4 text-slate-400" />
+                    <span>Settings & Preferences</span>
+                  </button>
+                </div>
+
+                {/* Logout row */}
+                <div className="pt-1 border-t border-slate-100 dark:border-slate-800 text-xs">
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      logout();
+                      navigate('/login');
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-2.5 transition-colors font-medium"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

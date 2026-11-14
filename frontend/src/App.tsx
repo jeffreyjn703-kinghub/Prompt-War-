@@ -11,6 +11,8 @@ import { MobileNav } from './components/MobileNav';
 import { MentorDrawer } from './components/MentorDrawer';
 
 import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { OnboardingWizard } from './pages/OnboardingWizard';
 import { DashboardPage } from './pages/DashboardPage';
 import { SkillAnalysisPage } from './pages/SkillAnalysisPage';
@@ -37,8 +39,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMentorOpen, setIsMentorOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Minimal layout for landing and onboarding
-  const isMinimal = location.pathname === '/' || location.pathname === '/onboard';
+  // Minimal layout for landing, login, and onboarding
+  const isMinimal = location.pathname === '/' || location.pathname === '/onboard' || location.pathname === '/login';
 
   if (isMinimal) {
     return (
@@ -87,8 +89,10 @@ export function App() {
                 <Layout>
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<LoginPage />} />
                     <Route path="/onboard" element={<OnboardingWizard />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/analysis" element={<SkillAnalysisPage />} />
                     <Route path="/match" element={<CareerMatchPage />} />
                     <Route path="/roadmap" element={<RoadmapPage />} />

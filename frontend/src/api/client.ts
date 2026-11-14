@@ -27,7 +27,7 @@ export function clearAuthToken() {
 // -------------------------------------------------------------
 // In-Memory / Local Storage Mock State for 100% Offline/Static Resilience
 // -------------------------------------------------------------
-const MOCK_PROFILE: Profile = {
+export const ARJUN_PROFILE: Profile = {
   user_id: 1,
   email: 'arjun.kumar@skillpath.ai',
   full_name: 'Arjun Kumar',
@@ -89,6 +89,82 @@ const MOCK_PROFILE: Profile = {
     },
   ],
 };
+
+export const ALEX_PROFILE: Profile = {
+  user_id: 2,
+  email: 'alex.rivera@skillpath.ai',
+  full_name: 'Alex Rivera',
+  education: 'M.S. Software Engineering, Georgia Tech',
+  target_role: 'Cloud Architect',
+  weekly_hours: 15,
+  streak_days: 18,
+  readiness_pct: 78.0,
+  skills: [
+    {
+      skill_name: 'Python',
+      proficiency: 5,
+      verified_level: 5,
+      confidence: 'verified by assessment',
+      last_assessed_at: '2026-10-15T09:00:00Z',
+    },
+    {
+      skill_name: 'Docker',
+      proficiency: 4,
+      verified_level: 4,
+      confidence: 'verified by assessment',
+      last_assessed_at: '2026-10-20T11:00:00Z',
+    },
+    {
+      skill_name: 'SQL',
+      proficiency: 4,
+      verified_level: 4,
+      confidence: 'verified by assessment',
+      last_assessed_at: '2026-11-01T15:00:00Z',
+    },
+    {
+      skill_name: 'Git & GitHub',
+      proficiency: 5,
+      verified_level: 5,
+      confidence: 'verified by assessment',
+      last_assessed_at: '2026-11-05T12:00:00Z',
+    },
+  ],
+  certifications: [
+    {
+      name: 'AWS Certified Solutions Architect - Associate',
+      issuer: 'Amazon Web Services',
+      issue_date: '2025-08',
+    },
+    {
+      name: 'CKA: Certified Kubernetes Administrator',
+      issuer: 'Cloud Native Computing Foundation',
+      issue_date: '2026-02',
+    },
+  ],
+  projects: [
+    {
+      title: 'Multi-Region Microservice Mesh',
+      description: 'Distributed microservices architecture deployed with Terraform, Docker, and Kubernetes.',
+      skills_used: 'Python, Docker, Cloud & DevOps',
+    },
+  ],
+};
+
+function loadStoredProfile(): Profile {
+  try {
+    const raw = localStorage.getItem('skillpath_mock_profile');
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return JSON.parse(JSON.stringify(ARJUN_PROFILE));
+}
+
+export function saveStoredProfile(p: Profile) {
+  try {
+    localStorage.setItem('skillpath_mock_profile', JSON.stringify(p));
+  } catch (_) {}
+}
+
+let MOCK_PROFILE: Profile = loadStoredProfile();
 
 const MOCK_ROLES: RoleTaxonomyItem[] = [
   {
@@ -455,13 +531,49 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
   // Auth
-  if (endpoint.startsWith('/auth/demo-login') || endpoint === '/auth/login' || endpoint === '/auth/register') {
+  if (endpoint.startsWith('/auth/demo-login')) {
+    if (endpoint.includes('learner=alex')) {
+      MOCK_PROFILE = JSON.parse(JSON.stringify(ALEX_PROFILE));
+      saveStoredProfile(MOCK_PROFILE);
+      return {
+        access_token: 'demo-jwt-token-alex-rivera-2026',
+        user_id: 2,
+        email: ALEX_PROFILE.email,
+        full_name: ALEX_PROFILE.full_name,
+        is_demo: true,
+      } as unknown as T;
+    } else {
+      MOCK_PROFILE = JSON.parse(JSON.stringify(ARJUN_PROFILE));
+      saveStoredProfile(MOCK_PROFILE);
+      return {
+        access_token: 'demo-jwt-token-arjun-kumar-2026',
+        user_id: 1,
+        email: ARJUN_PROFILE.email,
+        full_name: ARJUN_PROFILE.full_name,
+        is_demo: true,
+      } as unknown as T;
+    }
+  }
+
+  if (endpoint === '/auth/login' || endpoint === '/auth/register') {
+    let name = 'Arjun Kumar';
+    let email = 'arjun.kumar@skillpath.ai';
+    if (options.body) {
+      try {
+        const body = JSON.parse(options.body as string);
+        if (body.email) email = body.email;
+        if (body.full_name) name = body.full_name;
+      } catch (_) {}
+    }
+    MOCK_PROFILE.email = email;
+    MOCK_PROFILE.full_name = name;
+    saveStoredProfile(MOCK_PROFILE);
     return {
-      access_token: 'demo-jwt-token-arjun-kumar-2026',
+      access_token: 'jwt-token-' + btoa(email) + '-' + Date.now(),
       user_id: 1,
-      email: 'arjun.kumar@skillpath.ai',
-      full_name: 'Arjun Kumar',
-      is_demo: true,
+      email: email,
+      full_name: name,
+      is_demo: false,
     } as unknown as T;
   }
 
@@ -471,9 +583,32 @@ function getMockData<T>(endpoint: string, options: RequestInit = {}): T {
       try {
         const body = JSON.parse(options.body as string);
         Object.assign(MOCK_PROFILE, body);
+        // Dynamic readiness calculation based on skills
+        if (MOCK_PROFILE.skills && MOCK_PROFILE.skills.length > 0) {
+          const totalProficiency = MOCK_PROFILE.skills.reduce((sum, s) => sum + (s.proficiency || 1), 0);
+          const maxProficiency = MOCK_PROFILE.skills.length * 5;
+          // Target benchmark factor
+          MOCK_PROFILE.readiness_pct = Math.min(100, Math.round((totalProficiency / maxProficiency) * 75) + (MOCK_PROFILE.certifications?.length || 0) * 5);
+        }
+        saveStoredProfile(MOCK_PROFILE);
       } catch (_) {}
     }
     return MOCK_PROFILE as unknown as T;
+  }
+
+  if (endpoint === '/profile/analyze' && options.method === 'POST') {
+    // Agent analysis simulation
+    const totalProficiency = MOCK_PROFILE.skills.reduce((sum, s) => sum + (s.proficiency || 1), 0);
+    const maxProficiency = Math.max(1, MOCK_PROFILE.skills.length * 5);
+    const calculatedReadiness = Math.min(100, Math.round((totalProficiency / maxProficiency) * 80));
+    MOCK_PROFILE.readiness_pct = calculatedReadiness;
+    saveStoredProfile(MOCK_PROFILE);
+    return {
+      status: 'success',
+      readiness_pct: calculatedReadiness,
+      message: `Profile Analyst and Career Matcher completed evaluation. Evaluated ${MOCK_PROFILE.skills.length} skills against ${MOCK_PROFILE.target_role}. Readiness updated to ${calculatedReadiness}%.`,
+      timestamp: new Date().toISOString(),
+    } as unknown as T;
   }
 
   // Skills
@@ -1003,6 +1138,8 @@ export const api = {
   getProfile: () => request<Profile>('/profile'),
   updateProfile: (data: Partial<Profile>) =>
     request<Profile>('/profile', { method: 'PUT', body: JSON.stringify(data) }),
+  analyzeProfile: () =>
+    request<{ status: string; readiness_pct: number; message: string; timestamp: string }>('/profile/analyze', { method: 'POST' }),
 
   // Skills & Roles Taxonomy
   getSkills: (category?: string, search?: string) => {

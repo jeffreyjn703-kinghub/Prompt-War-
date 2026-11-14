@@ -5,9 +5,14 @@ import { Profile } from '../types';
 interface AuthContextType {
   token: string | null;
   profile: Profile | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string }>;
   loginDemo: (learner?: 'demo' | 'alex') => Promise<void>;
   logout: () => void;
+  updateProfile: (data: Partial<Profile>) => Promise<Profile>;
+  analyzeProfile: () => Promise<{ status: string; readiness_pct: number; message: string }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -51,6 +56,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth();
   }, []);
 
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const res = await api.login(email, password);
+      setAuthToken(res.access_token);
+      setToken(res.access_token);
+      await refreshProfile();
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg = err?.message || 'Login failed. Please check your credentials.';
+      return { success: false, error: errorMsg };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (email: string, password: string, fullName: string): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const res = await api.register(email, password, fullName);
+      setAuthToken(res.access_token);
+      setToken(res.access_token);
+      await refreshProfile();
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg = err?.message || 'Registration failed. Please try again.';
+      return { success: false, error: errorMsg };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const loginDemo = async (learner: 'demo' | 'alex' = 'demo') => {
     setIsLoading(true);
     try {
@@ -69,14 +106,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(null);
   };
 
+  const updateProfile = async (data: Partial<Profile>): Promise<Profile> => {
+    const updated = await api.updateProfile(data);
+    setProfile(updated);
+    return updated;
+  };
+
+  const analyzeProfile = async () => {
+    const res = await api.analyzeProfile();
+    await refreshProfile();
+    return res;
+  };
+
   return (
     <AuthContext.Provider
       value={{
         token,
         profile,
+        isAuthenticated: !!token,
         isLoading,
+        login,
+        register,
         loginDemo,
         logout,
+        updateProfile,
+        analyzeProfile,
         refreshProfile,
       }}
     >

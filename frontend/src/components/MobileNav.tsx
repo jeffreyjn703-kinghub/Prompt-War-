@@ -6,6 +6,7 @@ import {
   Map,
   CheckCircle2,
   TrendingUp,
+  User,
   Bot,
 } from 'lucide-react';
 
@@ -16,10 +17,10 @@ interface MobileNavProps {
 export const MobileNav: React.FC<MobileNavProps> = ({ onOpenMentor }) => {
   const tabs = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Analysis', path: '/analysis', icon: Radar },
     { name: 'Roadmap', path: '/roadmap', icon: Map },
     { name: 'Assess', path: '/assessments', icon: CheckCircle2 },
     { name: 'Progress', path: '/progress', icon: TrendingUp },
+    { name: 'Profile', path: '/profile', icon: User },
   ];
 
   return (
