@@ -9,8 +9,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'logo-mark.svg', 'logo-full.svg', 'logo-mono.svg', 'offline.html', 'icons/*.png', 'og-image.png'],
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'logo-mark.svg', 'logo-full.svg', 'logo-mono.svg', 'offline.html', 'icons/*.png', 'og-image.png', 'login-bg.jpg'],
       manifest: {
         name: 'VYNTRIXA — AI-Powered Adaptive Learning Intelligence',
         short_name: 'Vyntrixa',
@@ -67,7 +67,9 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json}'],
+        skipWaiting: true,
+        clientsClaim: true,
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,webp,svg,woff,woff2,json}'],
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/docs/, /^\/openapi.json/],

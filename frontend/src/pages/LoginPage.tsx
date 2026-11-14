@@ -116,7 +116,10 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+    <div
+      className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden bg-cover bg-center bg-no-repeat bg-fixed bg-slate-900"
+      style={{ backgroundImage: "url('/login-bg.jpg')" }}
+    >
       {/* Background Image Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <img
