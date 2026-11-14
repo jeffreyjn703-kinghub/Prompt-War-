@@ -22,6 +22,7 @@ import {
   hasGeminiApiKey,
   MentorContext,
 } from '../services/geminiMentor';
+import { MarkdownContent } from './MarkdownContent';
 
 interface MentorDrawerProps {
   isOpen: boolean;
@@ -340,7 +341,12 @@ export const MentorDrawer: React.FC<MentorDrawerProps> = ({ isOpen, onClose }) =
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 rounded-bl-xs'
                 }`}
               >
-                <div className="whitespace-pre-wrap">{m.text}</div>
+                {m.sender === 'mentor' ? (
+                  <MarkdownContent content={m.text} />
+                ) : (
+                  <div className="whitespace-pre-wrap">{m.text}</div>
+                )}
+
 
                 {/* Inline resource suggestion card if available */}
                 {m.resourceTitle && (

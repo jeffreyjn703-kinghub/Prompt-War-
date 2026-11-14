@@ -21,6 +21,8 @@ import {
   hasGeminiApiKey,
   MentorContext,
 } from '../services/geminiMentor';
+import { MarkdownContent } from '../components/MarkdownContent';
+
 
 interface ChatMessage {
   id: string;
@@ -290,7 +292,12 @@ export const MentorPage: React.FC = () => {
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 rounded-bl-xs'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{m.text}</div>
+                  {m.sender === 'mentor' ? (
+                    <MarkdownContent content={m.text} />
+                  ) : (
+                    <div className="whitespace-pre-wrap">{m.text}</div>
+                  )}
+
 
                   {m.resourceTitle && (
                     <div className="mt-3.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
